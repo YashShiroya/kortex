@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UnPaws: tape reel test</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0c0b10;color:#e9e6ef;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:28px 18px 60px}
+h1{font-size:26px;margin:0 0 6px}
+p{color:#b4afc0;margin:6px 0 16px;line-height:1.5}
+.screen{position:relative;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;cursor:pointer}
+canvas{width:100%;height:100%;display:block}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0 0}
+.lab{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8d889a;width:70px}
+button{appearance:none;border:1px solid #3a3644;background:#18161e;color:#eee;padding:8px 14px;border-radius:999px;font:inherit;font-size:14px;cursor:pointer}
+button.on{background:#eee;color:#111;border-color:#eee}
+.timer{margin-left:auto;font-variant-numeric:tabular-nums;color:#b4afc0;font-size:14px}
+.notes{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}
+@media(max-width:700px){.notes{grid-template-columns:1fr}}
+.note{background:#16141c;border:1px solid #26232f;border-radius:12px;padding:12px 14px;font-size:14px;color:#cfcad9;line-height:1.5}
+.note b{color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Tape reel test: sunny days and dark memories</h1>
+  <p>Four home-video scenes through the 1994 camcorder treatment. Pick one, or press <b>Reel</b> to cut between them like a mixed tape. Space or a click on the video pauses and unpauses.</p>
+  <div class="screen" id="screen"><canvas id="cv" width="960" height="540"></canvas></div>
+  <div class="row"><span class="lab">Sunny</span><button data-s="beach" class="on">Beach, July 1994</button><button data-s="picnic">Picnic, May 1995</button></div>
+  <div class="row"><span class="lab">Dark</span><button data-s="rain">Rain at the window, 2041</button><button data-s="hall">Empty office, 2043</button></div>
+  <div class="row"><span class="lab">Mix</span><button data-s="reel">Reel (cuts every 7 s)</button><span class="timer" id="timer"></span></div>
+  <div class="notes">
+    <div class="note"><b>Sunny tapes</b> are what units haven't done in years: sun, sand, grass, sky. Lots of motion (waves, kite, clouds), so they're easy to read early on. They're the "memories you're allowed before rest".</div>
+    <div class="note"><b>Dark tapes</b> are low light, so they're noisy and have little motion. That makes them naturally harder to read, without any trick. Good for later levels.</div>
+    <div class="note"><b>Hidden hint:</b> the sunny tapes are dated in the 1990s, the dark ones in the 2040s. Same camcorder look, but dated after the world turned. Nothing says why. The player may or may not notice.</div>
+    <div class="note"><b>Reel mode</b> shows how mixing tones could work: mostly sunny, with darker tapes creeping in as the levels go on, the way the lore creeps in.</div>
+  </div>
+</div>
+<script>
+(()=>{
+const cv=document.getElementById("cv"),ctx=cv.getContext("2d");
+const W=960,H=540,LW=192,LH=108;
+const lo=document.createElement("canvas");lo.width=LW;lo.height=LH;const l=lo.getContext("2d");
+const mod=(a,b)=>((a%b)+b)%b;
+const hash=n=>{n=Math.sin(n*127.1)*43758.5453;return n-Math.floor(n)};
+let playing=true,vt=12,sel="beach",cutFlash=0;
+
+// ---------------- SUNNY: beach ----------------
+function beach(c,t){
+  const ox=Math.sin(t*.15)*18;
+  let g=c.createLinearGradient(0,0,0,46);g.addColorStop(0,"#6fa3d6");g.addColorStop(1,"#cfe4f2");c.fillStyle=g;c.fillRect(0,0,LW,47);
+  g=c.createRadialGradient(40+ox*.3,10,1,40+ox*.3,10,55);g.addColorStop(0,"rgba(255,255,240,1)");g.addColorStop(.15,"rgba(255,250,220,.7)");g.addColorStop(1,"rgba(255,250,220,0)");c.fillStyle=g;c.fillRect(0,0,LW,LH);
+  c.fillStyle="rgba(255,255,255,.7)";for(let i=0;i<3;i++){const x=mod(i*80+t*2+ox,LW+60)-30;c.beginPath();c.ellipse(x,14+i*7,14,3,0,0,7);c.fill()}
+  g=c.createLinearGradient(0,46,0,66);g.addColorStop(0,"#2f6f9a");g.addColorStop(1,"#5fa8c0");c.fillStyle=g;c.fillRect(0,46,LW,22);
+  for(let i=0;i<30;i++){const x=mod(i*29+ox+Math.sin(t+i)*3,LW),y=47+(i*7)%16;c.fillStyle="rgba(255,255,255,"+(.25+.35*Math.sin(t*4+i*2))+")";c.fillRect(x,y,2,1)}
+  c.fillStyle="#c9b48f";c.fillRect(0,66,LW,10);
+  for(let i=0;i<4;i++){const p=mod(t*.22+i/4,1),y=60+p*15;c.strokeStyle="rgba(255,255,255,"+(.85*(1-p))+")";c.lineWidth=1.4;c.beginPath();for(let x=0;x<=LW;x+=4){c.lineTo(x,y+Math.sin((x+ox)*.08+i*2+t*.5)*1.2)}c.stroke()}
+  g=c.createLinearGradient(0,74,0,LH);g.addColorStop(0,"#ddc79c");g.addColorStop(1,"#efdcb4");c.fillStyle=g;c.fillRect(0,75,LW,LH-75);
+  // umbrella and people (in world, move with pan)
+  const ux=138+ox;c.fillStyle="#6a5a48";c.fillRect(ux,62,1.5,18);
+  for(let k=0;k<6;k++){c.fillStyle=k%2?"#f4f1ea":"#d8483c";c.beginPath();c.moveTo(ux,58);c.arc(ux,64,11,Math.PI+k*Math.PI/6,Math.PI+(k+1)*Math.PI/6);c.fill()}
+  c.fillStyle="#3a2f2a";const wx=mod(40+t*3+ox,LW+40)-20;c.fillRect(wx,62,2,6);c.fillRect(wx+.5,60,1.5,2);
+  c.fillRect(70+ox,63,2,5);c.fillRect(70.3+ox,61,1.5,2);c.fillRect(74+ox,64,2,4);
+  // gull
+  const gx=mod(t*14,LW+40)-20,gy=22+Math.sin(t*.8)*4,f=Math.sin(t*10)*2.5;c.strokeStyle="#2a2a30";c.lineWidth=.8;c.beginPath();c.moveTo(gx-4,gy-f);c.lineTo(gx,gy);c.lineTo(gx+4,gy-f);c.stroke();
+  // towel corner
+  c.save();c.translate(-6,LH);c.rotate(-.35);for(let k=0;k<6;k++){c.fillStyle=k%2?"#e8dcbc":"#3f6f94";c.fillRect(k*7,-22,7,30)}c.restore();
+}
+
+// ---------------- SUNNY: picnic ----------------
+function picnic(c,t){
+  let g=c.createLinearGradient(0,0,0,50);g.addColorStop(0,"#79a9de");g.addColorStop(1,"#d6e8f4");c.fillStyle=g;c.fillRect(0,0,LW,51);
+  c.fillStyle="rgba(255,255,255,.85)";for(let i=0;i<4;i++){const x=mod(i*70+t*3,LW+80)-40,y=10+i*6;c.beginPath();c.ellipse(x,y,16,5,0,0,7);c.ellipse(x+9,y-3,10,5,0,0,7);c.ellipse(x-8,y-1,8,4,0,0,7);c.fill()}
+  // tree line, swaying
+  for(let i=0;i<34;i++){const x=hash(i+1)*LW*1.1-8,h=8+hash(i)*14,w=5+hash(i+2)*7,sw=Math.sin(t*1.4+i)*1;const g2=40+Math.floor(hash(i+5)*30);c.fillStyle="rgb("+(g2-8)+","+(g2+40)+","+(g2-12)+")";c.beginPath();c.ellipse(x+sw,51-h*.5,w,h*.7,0,0,7);c.fill()}
+  for(let i=0;i<5;i++){c.fillStyle="#3a2a20";c.fillRect(hash(i+30)*LW,44,1,7)}
+  g=c.createLinearGradient(0,48,0,LH);g.addColorStop(0,"#86ad58");g.addColorStop(1,"#557f33");c.fillStyle=g;c.fillRect(0,49,LW,LH-49);
+  for(let i=0;i<40;i++){c.fillStyle="rgba("+(hash(i)>.5?"120,150,60":"60,90,30")+",.35)";c.beginPath();c.ellipse(hash(i+11)*LW,52+hash(i+12)*56,6+hash(i)*14,1.5+hash(i+1)*3,0,0,7);c.fill()}
+  c.strokeStyle="rgba(40,70,20,.5)";c.lineWidth=.6;for(let i=0;i<60;i++){const x=hash(i+3)*LW,y=56+hash(i+9)*50,s=Math.sin(t*2+i)*.8;c.beginPath();c.moveTo(x,y);c.lineTo(x+s,y-2-hash(i)*2);c.stroke()}
+  // blanket in perspective
+  const P=[[30,74],[150,70],[200,LH+8],[-20,LH+8]],n=8;
+  const lerp=(a,b,u)=>[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u];
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++){
+    const q=(u,v)=>lerp(lerp(P[0],P[1],u),lerp(P[3],P[2],u),v);
+    const a=q(i/n,j/n),b=q((i+1)/n,j/n),cc=q((i+1)/n,(j+1)/n),d=q(i/n,(j+1)/n);
+    c.fillStyle=(i+j)%2?"#e3d9c8":"#a8443a";c.beginPath();c.moveTo(...a);c.lineTo(...b);c.lineTo(...cc);c.lineTo(...d);c.fill();
+  }
+  // basket
+  c.fillStyle="#8a5a2c";c.fillRect(110,76,22,11);c.strokeStyle="#6b4420";c.lineWidth=1.5;c.beginPath();c.arc(121,76,8,Math.PI,0);c.stroke();
+  c.fillStyle="#d84a3a";c.beginPath();c.arc(70,86,3,0,7);c.fill();c.fillStyle="#7bb04a";c.beginPath();c.arc(76,85,2.5,0,7);c.fill();
+  // kite in a lazy figure-eight, string, tail
+  const kx=120+Math.sin(t*.6)*22,ky=22+Math.sin(t*1.2)*7;
+  c.strokeStyle="rgba(60,60,60,.6)";c.lineWidth=.5;c.beginPath();c.moveTo(kx,ky+6);c.quadraticCurveTo(kx+10,60,LW+10,LH);c.stroke();
+  c.fillStyle="#f2c230";c.beginPath();c.moveTo(kx,ky-6);c.lineTo(kx+5,ky);c.lineTo(kx,ky+7);c.lineTo(kx-5,ky);c.fill();
+  c.fillStyle="#3a7fc4";c.beginPath();c.moveTo(kx,ky-6);c.lineTo(kx+5,ky);c.lineTo(kx,ky);c.fill();
+  c.strokeStyle="#d84a3a";c.lineWidth=.8;c.beginPath();c.moveTo(kx,ky+7);for(let k=1;k<6;k++)c.lineTo(kx-k*2+Math.sin(t*5+k)*2,ky+7+k*3);c.stroke();
+  // bubbles
+  for(let i=0;i<7;i++){const p=mod(t*.12+i/7,1),x=40+i*9+Math.sin(t*2+i)*4+p*30,y=86-p*70;c.strokeStyle="rgba(255,255,255,"+(.7*(1-p))+")";c.lineWidth=.7;c.beginPath();c.arc(x,y,1.5+hash(i)*1.5,0,7);c.stroke()}
+}
+
+// ---------------- DARK: rain at the window ----------------
+function rain(c,t){
+  c.fillStyle="#0b0d14";c.fillRect(0,0,LW,LH);
+  const fl=(hash(Math.floor(t*6))>.93)?.35:1;   // streetlight flicker
+  // street below
+  c.fillStyle="#151821";c.fillRect(0,62,LW,LH-62);
+  let g=c.createRadialGradient(124,30,1,124,30,60);g.addColorStop(0,"rgba(255,170,80,"+(.9*fl)+")");g.addColorStop(1,"rgba(255,140,60,0)");c.fillStyle=g;c.fillRect(0,0,LW,LH);
+  c.fillStyle="#08090d";c.fillRect(123,30,2,40);c.fillRect(118,28,10,3);
+  c.fillStyle="rgba(255,190,110,"+fl+")";c.fillRect(119,31,8,1.5);
+  // buildings across
+  c.fillStyle="#10131b";c.fillRect(0,22,70,40);c.fillRect(150,16,42,46);
+  for(let i=0;i<10;i++){if(hash(i+4)>.75){c.fillStyle="rgba(200,190,140,.35)";c.fillRect(6+(i%5)*12,28+Math.floor(i/5)*12,5,6)}}
+  // parked car + wet reflections
+  c.fillStyle="#07080b";c.fillRect(60,62,40,9);c.fillRect(68,57,22,6);
+  for(let i=0;i<14;i++){const x=110+i*2+Math.sin(t*3+i)*1.5;c.fillStyle="rgba(255,160,70,"+(.15*fl*(1-i/14))+")";c.fillRect(x,72,1.5,30)}
+  // passing headlights every ~9s
+  const ph=mod(t,9);if(ph<2.2){const x=-40+ph*110;g=c.createRadialGradient(x,68,1,x,68,40);g.addColorStop(0,"rgba(230,230,255,.55)");g.addColorStop(1,"rgba(230,230,255,0)");c.fillStyle=g;c.fillRect(0,40,LW,LH-40)}
+  // rain
+  c.strokeStyle="rgba(170,180,210,.35)";c.lineWidth=.5;
+  for(let i=0;i<90;i++){const x=mod(hash(i)*LW+t*20,LW),y=mod(hash(i+50)*LH+t*140,LH);c.beginPath();c.moveTo(x,y);c.lineTo(x-1.5,y+5);c.stroke()}
+  // droplets on the glass, a few sliding
+  for(let i=0;i<40;i++){let x=hash(i+100)*LW,y=hash(i+200)*LH;if(i<5)y=mod(y+t*(3+i),LH+10)-5;c.fillStyle="rgba(200,190,170,.25)";c.beginPath();c.arc(x,y,.8+hash(i)*1.2,0,7);c.fill()}
+  // window frame
+  c.fillStyle="#050608";c.fillRect(94,0,4,LH);c.fillRect(0,50,LW,3);c.fillRect(0,0,LW,3);c.fillRect(0,LH-5,LW,5);
+}
+
+// ---------------- DARK: empty office, walking ----------------
+function hall(c,t){
+  const vx=96,vy=50+Math.sin(t*4)*1.2+Math.sin(t*1.1)*.8,f=40;
+  const P=(X,Y,z)=>[vx+X*f/z,vy-Y*f/z];
+  c.fillStyle="#1a1d1c";c.fillRect(0,0,LW,LH);
+  const zn=.3,zf=40,HW=1.5,TOP=1.2,BOT=-1;
+  const quad=(a,b,cc,d,col)=>{c.fillStyle=col;c.beginPath();c.moveTo(...a);c.lineTo(...b);c.lineTo(...cc);c.lineTo(...d);c.fill()};
+  quad(P(-HW,TOP,zn),P(HW,TOP,zn),P(HW,TOP,zf),P(-HW,TOP,zf),"#141716");
+  quad(P(-HW,BOT,zn),P(HW,BOT,zn),P(HW,BOT,zf),P(-HW,BOT,zf),"#2a2c27");
+  const fa=P(-HW,TOP,zf),fb=P(HW,BOT,zf);c.fillStyle="#050606";c.fillRect(fa[0],fa[1],fb[0]-fa[0],fb[1]-fa[1]);
+  // exit sign at the far end
+  c.fillStyle="#3cff8a";const e=P(-.2,.9,zf-1);c.fillRect(e[0],e[1],3,1.5);
+  const walk=t*2.2;
+  // doors on both walls
+  for(let i=0;i<8;i++){const z=mod(i*5-walk+2,40)+.8;for(const s of[-1,1]){quad(P(s*HW,-1,z),P(s*HW,.7,z),P(s*HW,.7,z+1.4),P(s*HW,-1,z+1.4),"#0d0f0e")}}
+  // ceiling lights, some dead, one flickering
+  for(let i=0;i<10;i++){
+    const id=Math.floor((walk-i*4)/40)*10+i;const z=mod(i*4-walk,40)+.6;
+    const dead=hash(id)>.72,flick=hash(id+1)>.8&&hash(Math.floor(t*12)+id)>.5;
+    const on=!dead&&!flick,col=on?"#dfe8e4":"#2e3432";
+    quad(P(-.35,TOP-.01,z),P(.35,TOP-.01,z),P(.35,TOP-.01,z+1.1),P(-.35,TOP-.01,z+1.1),col);
+    if(on){quad(P(-.35,BOT+.01,z),P(.35,BOT+.01,z),P(.35,BOT+.01,z+1.1),P(-.35,BOT+.01,z+1.1),"rgba(220,235,230,.18)");
+      const m=P(0,TOP,z+.5);const g=c.createRadialGradient(m[0],m[1],1,m[0],m[1],60/z+6);g.addColorStop(0,"rgba(220,240,230,.16)");g.addColorStop(1,"rgba(220,240,230,0)");c.fillStyle=g;c.fillRect(0,0,LW,LH)}
+  }
+  // papers on the floor
+  for(let i=0;i<12;i++){const z=mod(hash(i)*40-walk,40)+.7,X=(hash(i+7)-.5)*2.4;quad(P(X,BOT+.01,z),P(X+.25,BOT+.01,z),P(X+.3,BOT+.01,z+.35),P(X+.05,BOT+.01,z+.35),"rgba(200,200,185,.5)")}
+}
+
+const SCENES={
+  beach:{draw:beach,date:"JUL. 4 1994",start:13*3600+42*60,noise:9,dark:0,grade:"blur(1.5px) saturate(.78) contrast(.9) sepia(.14) brightness(1.04)",bloom:.32,tint:"rgba(255,214,170,.07)"},
+  picnic:{draw:picnic,date:"MAY 21 1995",start:12*3600+8*60,noise:9,dark:0,grade:"blur(1.5px) saturate(.74) contrast(.9) sepia(.16) brightness(1.03)",bloom:.3,tint:"rgba(255,226,160,.08)"},
+  rain:{draw:rain,date:"NOV. 2 2041",start:23*3600+51*60,noise:15,dark:0,grade:"blur(1.3px) saturate(1.05) contrast(1.05) brightness(1.15)",bloom:.2,tint:"rgba(40,60,120,.05)"},
+  hall:{draw:hall,date:"FEB. 9 2043",start:3*3600+17*60,noise:13,dark:0,grade:"blur(1.3px) saturate(.9) contrast(1.0) brightness(1.35)",bloom:.25,tint:"rgba(60,110,90,.06)"}
+};
+const REEL=["beach","picnic","beach","rain","picnic","hall"];
+
+function noise(amt,seed){const img=l.getImageData(0,0,LW,LH),d=img.data;let s=seed|0;for(let i=0;i<d.length;i+=4){s=(s*1103515245+12345)&0x7fffffff;const n=((s>>16)%(amt*2+1))-amt;d[i]+=n;d[i+1]+=n;d[i+2]+=n}l.putImageData(img,0,0)}
+function osd(text,x,y,align){ctx.font="34px VT323, monospace";ctx.textAlign=align||"left";ctx.fillStyle="#000";ctx.fillText(text,x+2,y+2);ctx.fillStyle="#fff";ctx.fillText(text,x,y)}
+function clock(start,t){const b=start+Math.floor(t),h=Math.floor(b/3600)%24,m=Math.floor(b/60)%60,s=b%60;return(h%12||12)+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")+(h>=12?" PM":" AM")}
+
+function current(){if(sel!=="reel")return{key:sel,lt:vt};const i=Math.floor(vt/7);return{key:REEL[i%REEL.length],lt:vt%7+i*3.1}}
+
+let lastKey="";
+function draw(now){
+  const {key,lt}=current(),S=SCENES[key];
+  if(key!==lastKey){if(lastKey)cutFlash=.25;lastKey=key}
+  S.draw(l,lt);noise(S.noise,Math.floor(vt*30));
+  ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle="#000";ctx.fillRect(0,0,W,H);
+  const sx=Math.sin(vt*2.1)*5+Math.sin(vt*5.3)*2,sy=Math.sin(vt*1.7+1)*4+Math.sin(vt*6.1)*1.5,rot=Math.sin(vt*1.3)*.006;
+  ctx.save();ctx.translate(W/2+sx,H/2+sy);ctx.rotate(rot);ctx.scale(1.06,1.06);
+  ctx.filter=S.grade;ctx.drawImage(lo,-W/2,-H/2,W,H);
+  // highlight bloom: cheap camcorder sensors smear bright areas
+  ctx.globalCompositeOperation="screen";ctx.globalAlpha=S.bloom;ctx.filter="blur(10px) brightness(1.2)";ctx.drawImage(lo,-W/2,-H/2,W,H);ctx.filter="none";ctx.globalAlpha=1;ctx.globalCompositeOperation="source-over";
+  ctx.globalCompositeOperation="screen";ctx.globalAlpha=.22;ctx.drawImage(lo,-W/2+6,-H/2,W,H);ctx.globalAlpha=1;ctx.globalCompositeOperation="source-over";
+  ctx.restore();
+  ctx.fillStyle=S.tint;ctx.fillRect(0,0,W,H);
+  const ex=.06*Math.sin(vt*.9)+.03*Math.sin(vt*2.3)-S.dark;
+  ctx.fillStyle=ex>0?"rgba(255,245,230,"+ex+")":"rgba(0,0,0,"+(-ex)+")";ctx.fillRect(0,0,W,H);
+  ctx.fillStyle="rgba(0,0,0,.12)";for(let y=0;y<H;y+=3)ctx.fillRect(0,y,W,1);
+  if(cutFlash>0){for(let y=0;y<H;y+=4){ctx.fillStyle="rgba(255,255,255,"+(Math.random()*cutFlash*1.6)+")";ctx.fillRect(0,y,W,2)}ctx.drawImage(cv,0,0,W,H,(Math.random()-.5)*30,0,W,H)}
+  if(!playing){const j=(Math.random()-.5)*4;ctx.drawImage(cv,0,0,W,H,j,0,W,H);const by=mod(now*.12,H+120)-60;for(let y=by;y<by+38;y+=2){ctx.fillStyle="rgba(255,255,255,"+(Math.random()*.35)+")";ctx.fillRect(-20,y,W+40,2)}}
+  ctx.drawImage(cv,0,H-18,W,18,(Math.random()-.5)*6,H-18,W,18);
+  osd(playing?"PLAY ▶":"PAUSE ❚❚",36,56);
+  osd(S.date,W-36,H-70,"right");osd(clock(S.start,lt),W-36,H-36,"right");
+}
+let last=performance.now();
+function tick(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(playing)vt+=dt;if(cutFlash>0)cutFlash-=dt;draw(now);
+  document.getElementById("timer").textContent=(playing?"▶ playing":"❚❚ paused")+" · "+Math.floor(vt/60)+":"+String(Math.floor(vt%60)).padStart(2,"0");requestAnimationFrame(tick)}
+const toggle=()=>{playing=!playing};
+document.getElementById("screen").addEventListener("pointerdown",toggle);
+document.addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();toggle()}});
+document.querySelectorAll("[data-s]").forEach(b=>b.addEventListener("click",()=>{sel=b.dataset.s;lastKey="";document.querySelectorAll("[data-s]").forEach(x=>x.classList.toggle("on",x===b))}));
+requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
