@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UnPaws: mood board v0.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Monoton&family=Righteous&family=Orbitron:wght@700;900&family=Shrikhand&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0c0b10;color:#e9e6ef;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding:36px 20px 80px}
+h1{font-size:30px;margin:0 0 6px;letter-spacing:-.02em}
+.lede{color:#a7a2b3;max-width:720px;margin:0 0 28px}
+section{margin:56px 0}
+.tag{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#a7a2b3;margin-bottom:6px}
+h2{font-size:26px;margin:0 0 4px}
+.one{color:#c9c4d4;margin:0 0 16px;max-width:760px}
+.mock{position:relative;aspect-ratio:16/10;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+@media(max-width:760px){.notes{grid-template-columns:1fr}}
+.note{background:#16141c;border:1px solid #26232f;border-radius:12px;padding:14px 16px;font-size:14px;color:#cfcad9}
+.note b{display:block;color:#fff;font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.note ul{margin:0;padding-left:18px}
+.sw{display:flex;gap:6px;margin:4px 0 10px}
+.sw i{flex:1;height:34px;border-radius:6px;display:block}
+.scan::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px)}
+
+/* ===================== A: TAPE (80s VHS / Kung Fury) ===================== */
+.a{background:linear-gradient(#0b0221 0%,#2a0a4a 42%,#ff2a6d 62%,#0b0221 62.2%)}
+.a .sun{position:absolute;left:50%;top:22%;width:30%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;
+  background:linear-gradient(#fff36b,#ff8a3d 55%,#ff2a6d);
+  -webkit-mask:linear-gradient(#000 0 50%,transparent 50% 54%,#000 54% 63%,transparent 63% 67%,#000 67% 75%,transparent 75% 80%,#000 80% 86%,transparent 86% 92%,#000 92%);
+  mask:linear-gradient(#000 0 50%,transparent 50% 54%,#000 54% 63%,transparent 63% 67%,#000 67% 75%,transparent 75% 80%,#000 80% 86%,transparent 86% 92%,#000 92%)}
+.a .grid{position:absolute;left:-50%;right:-50%;top:62%;bottom:-40%;transform:perspective(260px) rotateX(62deg);transform-origin:top;
+  background:repeating-linear-gradient(90deg,rgba(0,240,255,.8) 0 2px,transparent 2px 60px),repeating-linear-gradient(0deg,rgba(0,240,255,.8) 0 2px,transparent 2px 60px);animation:gr 1.2s linear infinite}
+@keyframes gr{to{background-position:0 60px,0 60px}}
+.a .logo{position:absolute;left:4%;top:5%;font-family:Orbitron,sans-serif;font-weight:900;font-size:clamp(18px,3.4vw,34px);letter-spacing:.06em;
+  background:linear-gradient(#e9f6ff 0%,#9fc4ff 45%,#2a2a60 50%,#ffd0f0 58%,#fff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 6px rgba(255,42,109,.8))}
+.a .hud{position:absolute;right:4%;top:6%;font-family:VT323,monospace;font-size:clamp(14px,2vw,22px);color:#00f0ff;text-shadow:0 0 8px #00f0ff}
+.a .cue{position:absolute;left:50%;top:13%;transform:translateX(-50%) skew(-10deg);font-family:Orbitron,sans-serif;font-weight:900;font-size:clamp(26px,5.6vw,58px);
+  color:#fff;-webkit-text-stroke:2px #ff2a6d;text-shadow:3px 0 0 rgba(0,240,255,.8),-3px 0 0 rgba(255,42,109,.8),0 0 24px #ff2a6d;letter-spacing:.06em}
+.a .crt{position:absolute;left:50%;top:32%;width:58%;aspect-ratio:16/9;transform:translateX(-50%);border-radius:18px/14px;overflow:hidden;
+  border:8px solid #1a1026;box-shadow:0 0 0 2px #ff2a6d,0 0 40px rgba(255,42,109,.6),inset 0 0 50px rgba(0,0,0,.7)}
+.a .crt .pic{position:absolute;inset:0;background:linear-gradient(#3b1f6b,#d4507a 55%,#f7a35c 70%,#1b0f25 70%);filter:saturate(1.5) contrast(1.1)}
+.a .crt .palm{position:absolute;bottom:30%;width:4px;height:42%;background:#120818;border-radius:2px}
+.a .crt .palm::before{content:"";position:absolute;left:-26px;top:-10px;width:56px;height:22px;border-radius:50%;border-top:6px solid #120818}
+.a .crt .road{position:absolute;left:0;right:0;bottom:12%;height:4px;background:repeating-linear-gradient(90deg,#ffe08a 0 30px,transparent 30px 60px);animation:rd .5s linear infinite}
+@keyframes rd{to{background-position:-60px 0}}
+.a .crt .osd{position:absolute;left:6%;top:7%;font-family:VT323,monospace;font-size:clamp(16px,2.4vw,28px);color:#fff;text-shadow:2px 2px 0 #000}
+.a .crt .ctr{position:absolute;right:6%;top:7%;font-family:VT323,monospace;font-size:clamp(14px,2vw,24px);color:#fff;text-shadow:2px 2px 0 #000}
+.a .crt .track{position:absolute;left:0;right:0;height:9%;background:linear-gradient(transparent,rgba(255,255,255,.35),rgba(0,0,0,.2),transparent);mix-blend-mode:screen;animation:tr 3.2s linear infinite}
+@keyframes tr{0%{top:110%}100%{top:-15%}}
+.a .meta{position:absolute;left:21%;right:21%;bottom:5%;font-family:VT323,monospace;color:#ffd0f0;font-size:clamp(13px,1.8vw,20px);text-align:center;text-shadow:0 0 6px #ff2a6d}
+
+/* ===================== B: DESKTOP (vaporwave OS) ===================== */
+.b{background:linear-gradient(#ff71ce 0%,#b967ff 45%,#01cdfe 72%);font-family:Tahoma,"MS Sans Serif",Verdana,sans-serif}
+.b .floor{position:absolute;left:-30%;right:-30%;bottom:-10%;height:42%;transform:perspective(300px) rotateX(55deg);transform-origin:top;
+  background:conic-gradient(#fffb96 25%,#05ffa1 0 50%,#fffb96 0 75%,#05ffa1 0) 0 0/70px 70px;opacity:.85}
+.b .bust{position:absolute;right:7%;bottom:14%;width:13%;aspect-ratio:3/4;background:radial-gradient(circle at 50% 28%,#f2eef6 0 22%,transparent 23%),linear-gradient(transparent 46%,#e6e0ee 46%);border-radius:40% 40% 8px 8px;filter:drop-shadow(4px 6px 0 rgba(80,0,120,.35))}
+.b .icons{position:absolute;left:2.5%;top:4%;display:flex;flex-direction:column;gap:14px}
+.b .ic{width:74px;text-align:center;font-size:11px;color:#fff;text-shadow:1px 1px 0 #000}
+.b .ic i{display:block;width:32px;height:32px;margin:0 auto 3px;background:#fffb96;border:2px solid #000;box-shadow:2px 2px 0 #000}
+.b .ic:nth-child(2) i{background:#05ffa1}.b .ic:nth-child(3) i{background:#01cdfe}
+.b .win{position:absolute;background:#c0c0c0;border:2px solid;border-color:#fff #000 #000 #fff;box-shadow:inset -1px -1px 0 #808080,inset 1px 1px 0 #dfdfdf}
+.b .tb{height:22px;background:linear-gradient(90deg,#000080,#ff71ce);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;padding:0 6px;justify-content:space-between}
+.b .tb s{text-decoration:none;display:inline-flex;gap:2px}
+.b .tb s u{text-decoration:none;width:16px;height:14px;background:#c0c0c0;border:1px solid;border-color:#fff #000 #000 #fff;color:#000;font-size:10px;line-height:12px;text-align:center}
+.b .player{left:17%;top:8%;width:60%}
+.b .vid{margin:4px;aspect-ratio:16/9;position:relative;overflow:hidden;border:2px solid;border-color:#808080 #fff #fff #808080;background:linear-gradient(#2b1d4a,#c8566a 60%,#f6a85c 74%,#1d1420 74%)}
+.b .vid .sun{position:absolute;left:62%;top:44%;width:14%;aspect-ratio:1;border-radius:50%;background:#ffe2a8}
+.b .vid .van{position:absolute;left:28%;bottom:16%;width:22%;height:16%;background:#120c15;border-radius:8px}
+.b .vid .van::before{content:"";position:absolute;left:18%;top:-55%;width:60%;height:60%;background:#120c15;border-radius:8px 8px 0 0}
+.b .ctl{display:flex;gap:4px;align-items:center;padding:2px 4px 6px;font-size:11px}
+.b .btn95{min-width:26px;height:22px;background:#c0c0c0;border:2px solid;border-color:#fff #000 #000 #fff;display:flex;align-items:center;justify-content:center;font-size:11px}
+.b .seek{flex:1;height:6px;border:1px solid;border-color:#808080 #fff #fff #808080;background:#fff;position:relative}
+.b .seek::after{content:"";position:absolute;left:28%;top:-6px;width:10px;height:16px;background:#c0c0c0;border:2px solid;border-color:#fff #000 #000 #fff}
+.b .cuewin{right:4%;top:30%;width:28%}
+.b .cuewin .body{padding:10px 12px 12px;font-size:12px}
+.b .cuewin .big{font-family:VT323,monospace;font-size:clamp(28px,4.4vw,48px);color:#000080;line-height:1;margin:6px 0 10px;letter-spacing:.04em}
+.b .bar{height:14px;border:2px solid;border-color:#808080 #fff #fff #808080;background:#fff;padding:1px}
+.b .bar i{display:block;height:100%;width:62%;background:repeating-linear-gradient(90deg,#000080 0 8px,transparent 8px 10px)}
+.b .task{position:absolute;left:0;right:0;bottom:0;height:30px;background:#c0c0c0;border-top:2px solid #fff;display:flex;align-items:center;gap:6px;padding:0 4px;font-size:12px}
+.b .start{height:22px;padding:0 8px;font-weight:700;border:2px solid;border-color:#fff #000 #000 #fff;display:flex;align-items:center;gap:5px}
+.b .start i{width:12px;height:12px;background:conic-gradient(#ff71ce 25%,#01cdfe 0 50%,#05ffa1 0 75%,#fffb96 0);display:block}
+.b .tbtn{height:22px;padding:0 10px;border:2px solid;border-color:#000 #fff #fff #000;display:flex;align-items:center;background:#d8d8d8}
+.b .tray{margin-left:auto;height:22px;padding:0 8px;border:1px solid;border-color:#808080 #fff #fff #808080;display:flex;align-items:center;gap:10px}
+
+/* ===================== C: CONSOLE (70s retro-future corporate) ===================== */
+.c{background:repeating-linear-gradient(180deg,#2b1a10 0 40%,#e2632b 40% 46%,#f39a2c 46% 52%,#f6c443 52% 58%,#2b1a10 58% 100%);}
+.c .wall{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(255,180,90,.15),transparent 60%)}
+.c .title{position:absolute;left:5%;top:6%;font-family:Shrikhand,serif;font-size:clamp(22px,4vw,44px);color:#f6c443;text-shadow:3px 3px 0 #e2632b,6px 6px 0 #6b2f14}
+.c .term{position:absolute;right:5%;top:7%;width:30%;background:#140c06;border:6px solid #3a2414;border-radius:10px;padding:10px 12px;font-family:VT323,monospace;color:#ffb000;font-size:clamp(14px,1.9vw,22px);line-height:1.15;text-shadow:0 0 6px rgba(255,176,0,.7)}
+.c .term .big{font-size:clamp(28px,4.6vw,52px);margin-top:4px}
+.c .term .blink{animation:bl 1s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+.c .tv{position:absolute;left:8%;top:30%;width:58%;aspect-ratio:16/10.5;border-radius:22px;padding:3.2% 15% 3.2% 3.2%;
+  background:repeating-linear-gradient(92deg,#6b3a1c 0 6px,#7d4524 6px 9px,#5e3218 9px 15px,#86502c 15px 17px);box-shadow:0 18px 40px rgba(0,0,0,.6),inset 0 0 0 4px #4a2812}
+.c .screen{position:relative;width:100%;height:100%;border-radius:28% / 22%;overflow:hidden;background:linear-gradient(#5b2e6e,#e07a4a 58%,#f6c06a 70%,#2a1810 70%);box-shadow:inset 0 0 40px rgba(0,0,0,.8);filter:sepia(.25) saturate(1.2)}
+.c .screen .osd{position:absolute;left:10%;top:12%;font-family:VT323,monospace;color:#ffe9b0;font-size:clamp(14px,2vw,24px)}
+.c .screen .van{position:absolute;left:30%;bottom:20%;width:28%;height:20%;background:#2a1408;border-radius:10px}
+.c .knobs{position:absolute;right:3.5%;top:10%;display:flex;flex-direction:column;gap:16px;align-items:center}
+.c .knob{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e8d6b8,#8a7154);box-shadow:0 2px 0 #2a1408}
+.c .knob.sm{width:26px;height:26px}
+.c .grille{width:44px;height:40px;background:repeating-linear-gradient(0deg,#2a1408 0 3px,transparent 3px 6px)}
+.c .label{position:absolute;left:8%;bottom:7%;background:#111;color:#fff;font-family:"Courier New",monospace;font-weight:700;font-size:clamp(11px,1.4vw,15px);padding:3px 10px;letter-spacing:.12em;border-radius:3px;box-shadow:0 2px 0 #000}
+.c .integ{position:absolute;right:6%;bottom:8%;font-family:Righteous,sans-serif;color:#f6c443;font-size:clamp(14px,2vw,22px)}
+.c .integ span{display:inline-block;width:18px;height:26px;margin-left:5px;background:#f39a2c;border-radius:4px;vertical-align:middle}
+.c .integ span.off{background:#4a2812}
+
+.rec{background:#16141c;border:1px solid #26232f;border-radius:14px;padding:18px 20px;margin-top:20px}
+.rec h3{margin:0 0 8px}
+.rec p{margin:6px 0;color:#cfcad9}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>UnPaws: mood board v0.1</h1>
+  <p class="lede">Three directions for the look, all still built from real-looking interfaces. Each one gives the game a believable "device" for the honest timer, a place for the cue to live, a new realistic trickster, and room for the 2103 lore to leak through. These are static mockups; nothing in the game has changed yet.</p>
+
+  <!-- A -->
+  <section>
+    <div class="tag">Direction A</div>
+    <h2>TAPE: 80s VHS, Kung Fury energy</h2>
+    <p class="one">You're watching an archived tape on a CRT inside a neon synthwave world. Chrome logo, laser grid, a worn-tape picture with tracking bars, and the VCR's own on-screen display saying PLAY ▶ / PAUSE ❚❚.</p>
+    <div class="mock a scan">
+      <div class="sun"></div><div class="grid"></div>
+      <div class="logo">UNPAWS</div>
+      <div class="hud">INTEGRITY ▮▮▮ · UNIT 4471</div>
+      <div class="cue">PAUSE</div>
+      <div class="crt">
+        <div class="pic"></div>
+        <div class="palm" style="left:14%"></div><div class="palm" style="left:80%;height:36%"></div>
+        <div class="road"></div>
+        <div class="track"></div>
+        <div class="osd">PLAY ▶</div>
+        <div class="ctr">SP 0:03:42</div>
+      </div>
+      <div class="meta">COASTAL DRIVE '84 · ARCHIVED TAPE · 2.1M UNITS VIEWED</div>
+    </div>
+    <div class="notes">
+      <div class="note"><b>Palette &amp; type</b>
+        <div class="sw"><i style="background:#0b0221"></i><i style="background:#2a0a4a"></i><i style="background:#ff2a6d"></i><i style="background:#00f0ff"></i><i style="background:#fff36b"></i></div>
+        Chrome Orbitron for the logo and cues, VT323 for the VCR display and tape counter.</div>
+      <div class="note"><b>Gameplay fit</b><ul>
+        <li>Honest timer = the VCR tape counter.</li>
+        <li>Levels 1–2 show the PLAY/PAUSE display; later levels hide it.</li>
+        <li><b>New trickster:</b> a paused VHS frame really does jitter and show a noise bar. That's the "drift while paused" idea from v1, but realistic this time.</li></ul></div>
+      <div class="note"><b>Lore fit</b><ul>
+        <li>Footage of physical life as "archived tapes".</li>
+        <li>Loud and fun on the surface, which makes the dark lore land harder.</li>
+        <li>Risk: high energy can drown the subtle hints.</li></ul></div>
+    </div>
+  </section>
+
+  <!-- B -->
+  <section>
+    <div class="tag">Direction B</div>
+    <h2>DESKTOP: vaporwave operating system</h2>
+    <p class="one">The whole screen is the unit's desktop: a 90s-style OS in vaporwave pastels, a media player window, a cue that arrives as a system dialog, desktop icons and a taskbar that quietly tell the story.</p>
+    <div class="mock b">
+      <div class="floor"></div><div class="bust"></div>
+      <div class="icons">
+        <div class="ic"><i></i>shift_log.txt</div>
+        <div class="ic"><i></i>rest_request.bat</div>
+        <div class="ic"><i></i>archive/</div>
+      </div>
+      <div class="win player">
+        <div class="tb"><span>UnitPlayer · archive_0441.tape</span><s><u>_</u><u>□</u><u>×</u></s></div>
+        <div class="vid"><div class="sun"></div><div class="van"></div></div>
+        <div class="ctl"><div class="btn95">❚❚</div><div class="btn95">■</div><div class="seek"></div><span>03:42 / 12:47</span></div>
+      </div>
+      <div class="win cuewin">
+        <div class="tb"><span>Operator</span><s><u>×</u></s></div>
+        <div class="body">Shift-end check, cue 4 of 10
+          <div class="big">PAUSE</div>
+          <div class="bar"><i></i></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="start"><i></i>UNIT-4471</div>
+        <div class="tbtn">UnitPlayer</div>
+        <div class="tray">♥♥♥ integrity · rest queued 00:04 · 23:59</div>
+      </div>
+    </div>
+    <div class="notes">
+      <div class="note"><b>Palette &amp; type</b>
+        <div class="sw"><i style="background:#ff71ce"></i><i style="background:#b967ff"></i><i style="background:#01cdfe"></i><i style="background:#05ffa1"></i><i style="background:#fffb96"></i><i style="background:#c0c0c0"></i></div>
+        Classic 90s system font (Tahoma), VT323 for the cue word. Beveled grey windows on top of pastel vaporwave.</div>
+      <div class="note"><b>Gameplay fit</b><ul>
+        <li>Honest timer = the player's time display plus the taskbar clock.</li>
+        <li><b>New tricksters, all realistic:</b> the window goes "(Not Responding)" and the frame hangs; a screensaver kicks in; notifications pop up over the video.</li>
+        <li>Opens the door to the "whole desktop" idea you mentioned.</li></ul></div>
+      <div class="note"><b>Lore fit</b><ul>
+        <li>The strongest of the three: it <i>is</i> the unit's terminal.</li>
+        <li>Icons, file names and the tray carry hints without any text dump ("rest_request.bat", "rest queued").</li>
+        <li>The operator can literally message you.</li></ul></div>
+    </div>
+  </section>
+
+  <!-- C -->
+  <section>
+    <div class="tag">Direction C</div>
+    <h2>CONSOLE: 70s retro-future corporate</h2>
+    <p class="one">Warm 70s: a wood-grain TV set, groovy stripes, chunky type, and an amber terminal for the operator, like the ship computers in 70s sci-fi. Cosier on the surface and quietly creepier.</p>
+    <div class="mock c scan">
+      <div class="wall"></div>
+      <div class="title">UnPaws</div>
+      <div class="term">MU-UNIT 4471 / SHIFT END<br>&gt; CUE 4 OF 10<div class="big">PAUSE<span class="blink">_</span></div></div>
+      <div class="tv">
+        <div class="screen"><div class="osd">▶ 0:03:42</div><div class="van"></div></div>
+        <div class="knobs"><div class="knob"></div><div class="knob sm"></div><div class="grille"></div></div>
+      </div>
+      <div class="label">ARCHIVE REEL 0441 · COASTAL DRIVE</div>
+      <div class="integ">INTEGRITY<span></span><span></span><span class="off"></span></div>
+    </div>
+    <div class="notes">
+      <div class="note"><b>Palette &amp; type</b>
+        <div class="sw"><i style="background:#2b1a10"></i><i style="background:#6b3a1c"></i><i style="background:#e2632b"></i><i style="background:#f39a2c"></i><i style="background:#f6c443"></i><i style="background:#ffb000"></i></div>
+        Shrikhand/Righteous for titles, VT323 in amber for the operator terminal, label-maker strips for metadata.</div>
+      <div class="note"><b>Gameplay fit</b><ul>
+        <li>Honest timer = the counter in the TV's corner.</li>
+        <li><b>New tricksters:</b> a power dip that dims the picture, CRT picture wobble, channel noise.</li>
+        <li>Less "YouTube", more physical object.</li></ul></div>
+      <div class="note"><b>Lore fit</b><ul>
+        <li>Strong "the company owns you" feeling: amber terminal, labelled reels, cold operator lines.</li>
+        <li>70s optimism about the future, viewed from 2103, is a nice irony.</li>
+        <li>Furthest from the vaporwave reference.</li></ul></div>
+    </div>
+  </section>
+
+  <div class="rec">
+    <h3>My recommendation: B as the frame, A inside it</h3>
+    <p>Use the <b>vaporwave desktop</b> as the world, since it's the unit's terminal, carries the lore through icons and dialogs, and leaves room for the bigger "whole desktop" experience. Then make the <b>videos themselves look like Kung Fury-style VHS tapes</b>: neon, tracking bars, VCR display. That gives us a realistic "paused but jittering" trickster to replace the film grain.</p>
+    <p>C's amber operator terminal could appear as one dialog style inside B, for when the operators speak, so the 70s note isn't lost.</p>
+  </div>
+</div>
+</body>
+</html>
