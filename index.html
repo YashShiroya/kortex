@@ -30,6 +30,7 @@ canvas{width:100%;height:100%;display:block}
 .row{display:flex;align-items:center;gap:14px;font-size:13px;color:#eee;font-variant-numeric:tabular-nums}
 .row svg{width:24px;height:24px;fill:#fff;display:block}
 .spacer{flex:1}
+.chip{position:absolute;left:12px;bottom:12px;background:rgba(0,0,0,.6);color:#fff;font-size:14px;font-weight:600;padding:5px 10px;border-radius:6px;font-variant-numeric:tabular-nums;pointer-events:none;letter-spacing:.02em}
 .flash{position:absolute;left:50%;top:50%;width:78px;height:78px;margin:-39px 0 0 -39px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none}
 .flash svg{width:36px;height:36px;fill:#fff}
 .flash.go{animation:fl .6s ease-out}
@@ -50,17 +51,18 @@ canvas{width:100%;height:100%;display:block}
 .toast.good{color:var(--ok)}
 .help{margin-top:10px;text-align:center;color:#5d5d63;font-size:12px}
 .overlay{position:fixed;inset:0;background:rgba(8,8,9,.9);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:10;padding:20px;overflow:auto}
-.card{max-width:540px;width:100%;text-align:center}
+.card{max-width:560px;width:100%;text-align:center}
 .card h1{font-size:52px;margin:0 0 4px;font-weight:900;letter-spacing:-.03em}
 .card h1 span{color:var(--accent)}
 .card h2{font-size:30px;margin:0 0 6px;font-weight:850;letter-spacing:-.01em}
 .card .eyebrow{color:var(--mute);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
 .card p{color:#c9c9ce;line-height:1.55;margin:8px 0}
+.ver{color:#5d5d63;font-size:12px;margin-top:18px}
 .kbd{display:inline-block;border:1px solid #444;border-bottom-width:2px;border-radius:5px;padding:0 6px;font-size:12px;color:#ddd;font-family:ui-monospace,Menlo,monospace}
 .btn{appearance:none;border:0;background:var(--fg);color:#111;font-weight:700;font-size:15px;padding:12px 24px;border-radius:999px;cursor:pointer;margin:16px 5px 0;font-family:inherit}
 .btn.ghost{background:transparent;color:var(--fg);border:1px solid #444}
-.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:20px}
-@media(max-width:520px){.levels{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)!important}}
+.levels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:20px}
+@media(max-width:560px){.levels{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)!important}}
 .lv{background:#18181b;border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;color:var(--fg);text-align:left;font:inherit}
 .lv:hover:not([disabled]){border-color:#555}
 .lv b{display:block;font-size:14px}
@@ -79,14 +81,14 @@ canvas{width:100%;height:100%;display:block}
   <header>
     <div class="brand" id="home">Un<span>Paws</span></div>
     <div class="hud">
-      <span id="hudLevel">—</span>
+      <span id="hudLevel"></span>
       <span id="hudProg"></span>
       <span class="hearts" id="hudHearts"></span>
     </div>
   </header>
 
   <div class="cue">
-    <div class="cue-word dim" id="cueWord">waiting</div>
+    <div class="cue-word dim" id="cueWord"></div>
     <div class="cue-bar" id="cueBar"><i id="cueFill"></i></div>
   </div>
 
@@ -98,42 +100,57 @@ canvas{width:100%;height:100%;display:block}
       <div class="prog"><i id="progFill"></i></div>
       <div class="row">
         <svg viewBox="0 0 24 24"><path id="ctlIcon" d=""/></svg>
-        <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" transform="scale(-1,1) translate(-24,0)"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M18 6h-2v12h2zm-3.5 6L6 6v12z"/></svg>
         <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
-        <span id="timeLabel">0:00 / 12:47</span>
+        <span id="timeLabel"></span>
         <span class="spacer"></span>
         <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
       </div>
     </div>
+    <div class="chip hide" id="chip"></div>
     <div class="edge" id="edge"></div>
   </div>
 
   <div class="meta">
     <div class="avatar"></div>
     <div>
-      <div class="title">Coastal drive at golden hour (no talking, 4K)</div>
-      <div class="sub">slowroads · 2.1M views · 3 years ago</div>
+      <div class="title" id="vidTitle"></div>
+      <div class="sub" id="vidSub"></div>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
-  <div class="help">One button: <span class="kbd">Space</span> <span class="kbd">K</span> or tap the video</div>
+  <div class="help">One button: <span class="kbd">Space</span> <span class="kbd">K</span> or tap the video · <span id="verFoot"></span></div>
 </div>
 
 <div class="overlay" id="overlay"><div class="card" id="card"></div></div>
 
 <script>
 (()=>{
+const VERSION="2.0";
 const PLAY="M8 5v14l11-7z", PAUSE="M6 5h4v14H6zM14 5h4v14h-4z";
-const DURATION=767;
 
+const VIDEOS={
+  drive:{title:"Coastal drive at golden hour (no talking, 4K)",sub:"slowroads · 2.1M views · 3 years ago",dur:767},
+  recap:{title:"Highway 1 road trip, day 2: photos + clips",sub:"slowroads · 184K views · 2 years ago",dur:612}
+};
+
+// controls: "full" = normal player bar (shows play/pause icon). "chip" = bar hidden, honest timer chip only.
 const LEVELS=[
- {name:"Obey",rule:"A cue appears above the video. <b>PAUSE</b> means pause it. <b>UNPAUSE</b> means unpause it. That's it.",window:2.2,n:8,mode:"align"},
- {name:"Dodge",rule:"Now some cues ask for what's already true. If the video is already paused and the cue says <b>PAUSE</b>, the right move is no move.",window:2.0,n:10,mode:"dodge"},
- {name:"Stutter",rule:"The controls are gone. And sometimes the video freezes on its own, usually right when you look. Did <i>you</i> pause it?",window:1.9,n:10,mode:"dodge",stutter:true,hideControls:true},
- {name:"Ghost",rule:"Paused frames drift. Icons flash by themselves. Trust your hands, not your eyes.",window:1.9,n:10,mode:"dodge",stutter:true,hideControls:true,ghost:true},
- {name:"Words",rule:"Cues get wordier. Every cue describes how the video should <i>end up</i>. Work out the state, then decide whether anything needs doing.",window:2.5,n:12,mode:"dodge",words:true,stutter:true,hideControls:true},
- {name:"Endless",rule:"Everything at once, faster and faster. Three hearts. How far can you get?",window:1.9,n:Infinity,mode:"dodge",stutter:true,hideControls:true,ghost:true,words:true,endless:true}
+ {name:"Obey",video:"drive",controls:"full",window:2.2,n:8,mode:"align",
+  rule:"A cue appears above the video. <b>PAUSE</b> means pause it. <b>UNPAUSE</b> means unpause it. That's it."},
+ {name:"Dodge",video:"drive",controls:"full",window:2.0,n:10,mode:"dodge",
+  rule:"Now some cues ask for what's already true. If the video is already paused and the cue says <b>PAUSE</b>, the right move is no move."},
+ {name:"Lag",video:"drive",controls:"chip",window:2.1,n:10,mode:"dodge",lag:true,
+  rule:"The play button is gone; only the timer stays, and the timer never lies. Sometimes the connection drops: the picture stops, the timer stops, a spinner appears. That's still <i>playing</i>."},
+ {name:"Still",video:"recap",controls:"chip",window:2.3,n:10,mode:"dodge",stillBias:true,
+  rule:"A new video: a road-trip recap with photos between the clips. A photo holds still on purpose, so the picture can't tell you anything. The timer can."},
+ {name:"Ghost",video:"recap",controls:"chip",window:2.2,n:12,mode:"dodge",lag:true,grain:true,stillBias:true,
+  rule:"Photos, lag, and a film-grain filter on the player that never stops moving, not even when paused. Only the timer and the spinner tell the truth."},
+ {name:"Words",video:"drive",controls:"chip",window:2.5,n:12,mode:"dodge",lag:true,words:true,
+  rule:"Cues get wordier. Every cue describes how the video should <i>end up</i>. Work out the state, then decide whether anything needs doing."},
+ {name:"Endless",video:"recap",controls:"chip",window:2.1,n:Infinity,mode:"dodge",lag:true,grain:true,words:true,stillBias:true,endless:true,
+  rule:"Everything at once: photos, lag, grain, and wordy cues after a while. Faster and faster. Three hearts."}
 ];
 const WORDS=[
  {t:"PAUSE",p:false},{t:"UNPAUSE",p:true},{t:"PLAY",p:true},{t:"STOP",p:false},
@@ -146,103 +163,178 @@ const cv=$("cv"), ctx=cv.getContext("2d");
 const player=$("player"), overlay=$("overlay"), card=$("card");
 
 // ---------- persistence ----------
-function load(k,d){try{const v=localStorage.getItem("unpaws."+k);return v==null?d:JSON.parse(v)}catch(e){return d}}
-function save(k,v){try{localStorage.setItem("unpaws."+k,JSON.stringify(v))}catch(e){}}
+function load(k,d){try{const v=localStorage.getItem("unpaws.v2."+k);return v==null?d:JSON.parse(v)}catch(e){return d}}
+function save(k,v){try{localStorage.setItem("unpaws.v2."+k,JSON.stringify(v))}catch(e){}}
 let unlocked=load("unlocked",0), best=load("best",0);
 
 // ---------- state ----------
-let vt=60+Math.random()*180;   // content time of the "video"
+let vt=60+Math.random()*180;   // playback position. Single source of truth for the timer.
 let playing=true;
-const fx={frozen:0,spin:false,drift:0,grainLive:false};
-let G={phase:"idle",lvIdx:0,lv:LEVELS[0],hearts:3,progress:0,score:0,cue:null,nextAt:0,graceUntil:0,lastCueEnd:0,stats:null,matchStreak:0};
+const fx={lag:0};              // seconds of network stall remaining (only while playing)
+let countIv=null;
+let G={phase:"idle",lvIdx:0,lv:LEVELS[0],hearts:3,progress:0,score:0,cue:null,nextAt:0,graceUntil:0,stats:null,matchStreak:0,waitStill:false};
+const vid=()=>VIDEOS[G.lv.video];
 
-function newStats(){return{actionCues:0,actionHit:0,rts:[],dodgeCues:0,dodgeHeld:0,flinch:0,slow:0,unprompted:0,freezeErr:0,freezeCues:0,freezeOk:0}}
+function newStats(){return{actionCues:0,actionHit:0,rts:[],dodgeCues:0,dodgeHeld:0,flinch:0,slow:0,unprompted:0,lagErr:0,stillErr:0}}
 
-// ---------- canvas ----------
-function resize(){const r=player.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d)}
-window.addEventListener("resize",resize);resize();
+// ---------- drawing ----------
 const W=960,H=540;
 const mod=(a,b)=>((a%b)+b)%b;
-function ridge(base,amp,off,color,f1,f2){ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W;x+=8){const u=x+off;ctx.lineTo(x,base-amp*(.6*Math.sin(u*f1)+.4*Math.sin(u*f2+1.7)))}ctx.lineTo(W,H);ctx.closePath();ctx.fill()}
-function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();ctx.fill()}
-function cloud(x,y,s){ctx.beginPath();ctx.ellipse(x,y,60*s,16*s,0,0,7);ctx.ellipse(x+30*s,y-10*s,36*s,14*s,0,0,7);ctx.ellipse(x-34*s,y-4*s,30*s,11*s,0,0,7);ctx.fill()}
-function wheel(x,y,a){ctx.fillStyle="#08060a";ctx.beginPath();ctx.arc(x,y,18,0,7);ctx.fill();ctx.strokeStyle="#7a6680";ctx.lineWidth=2;for(let i=0;i<4;i++){const b=a+i*Math.PI/4;ctx.beginPath();ctx.moveTo(x-Math.cos(b)*11,y-Math.sin(b)*11);ctx.lineTo(x+Math.cos(b)*11,y+Math.sin(b)*11);ctx.stroke()}ctx.fillStyle="#9a8aa0";ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill()}
+function resize(){const r=player.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d)}
+window.addEventListener("resize",resize);resize();
+
+function ridge(c,base,amp,off,color,f1,f2){c.fillStyle=color;c.beginPath();c.moveTo(0,H);for(let x=0;x<=W;x+=8){const u=x+off;c.lineTo(x,base-amp*(.6*Math.sin(u*f1)+.4*Math.sin(u*f2+1.7)))}c.lineTo(W,H);c.closePath();c.fill()}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();c.fill()}
+function cloud(c,x,y,s){c.beginPath();c.ellipse(x,y,60*s,16*s,0,0,7);c.ellipse(x+30*s,y-10*s,36*s,14*s,0,0,7);c.ellipse(x-34*s,y-4*s,30*s,11*s,0,0,7);c.fill()}
+function wheel(c,x,y,a){c.fillStyle="#08060a";c.beginPath();c.arc(x,y,18,0,7);c.fill();c.strokeStyle="#7a6680";c.lineWidth=2;for(let i=0;i<4;i++){const b=a+i*Math.PI/4;c.beginPath();c.moveTo(x-Math.cos(b)*11,y-Math.sin(b)*11);c.lineTo(x+Math.cos(b)*11,y+Math.sin(b)*11);c.stroke()}c.fillStyle="#9a8aa0";c.beginPath();c.arc(x,y,3,0,7);c.fill()}
+function grain(c,seed,alpha,n){let s=seed|0;c.fillStyle="rgba(255,255,255,"+alpha+")";for(let i=0;i<n;i++){s=(s*1103515245+12345)&0x7fffffff;const x=s%W;s=(s*1103515245+12345)&0x7fffffff;c.fillRect(x,s%H,2,2)}}
+
+// The driving footage. Everything is a pure function of t, so the same t always gives the same frame.
+function drawDrive(c,t){
+  const g=c.createLinearGradient(0,0,0,H*.72);g.addColorStop(0,"#2b1d4a");g.addColorStop(.55,"#c8566a");g.addColorStop(1,"#f6a85c");
+  c.fillStyle=g;c.fillRect(0,0,W,H);
+  const sx=W*.7,sy=H*.52;
+  const sg=c.createRadialGradient(sx,sy,10,sx,sy,170);sg.addColorStop(0,"rgba(255,230,170,.9)");sg.addColorStop(1,"rgba(255,200,120,0)");
+  c.fillStyle=sg;c.fillRect(sx-170,sy-170,340,340);
+  c.fillStyle="#ffe2a8";c.beginPath();c.arc(sx,sy,46,0,7);c.fill();
+  c.fillStyle="rgba(255,215,215,.33)";
+  for(let i=0;i<6;i++)cloud(c,mod(i*230-t*14,W+320)-160,55+(i*57)%150,.8+(i%3)*.3);
+  c.strokeStyle="rgba(40,18,40,.75)";c.lineWidth=2;
+  for(let i=0;i<5;i++){const x=mod(i*190+t*42,W+200)-100,y=140+i*16+Math.sin(t*1.3+i)*8,f=Math.sin(t*9+i*2)*6;c.beginPath();c.moveTo(x-10,y-f);c.quadraticCurveTo(x-5,y-2,x,y);c.quadraticCurveTo(x+5,y-2,x+10,y-f);c.stroke()}
+  ridge(c,H*.63,70,t*10,"#7a3f72",.006,.013);
+  ridge(c,H*.71,46,t*36,"#432549",.011,.023);
+  c.fillStyle="#2a1e2e";c.fillRect(0,H*.755,W,H*.03);
+  c.fillStyle="#1d1420";c.fillRect(0,H*.785,W,H*.215);
+  for(let x=-mod(t*240,210);x<W+40;x+=210){c.fillStyle="#140d16";c.fillRect(x,H*.58,6,H*.2);c.fillRect(x-16,H*.58,38,4)}
+  c.fillStyle="#f3d38a";for(let x=-mod(t*330,120);x<W;x+=120)c.fillRect(x,H*.9,62,6);
+  const cx=W*.36,cy=H*.80+Math.sin(t*11)*1.5;
+  c.fillStyle="#120c15";rr(c,cx-95,cy-62,190,48,12);rr(c,cx-62,cy-96,118,40,12);
+  c.fillStyle="rgba(246,168,92,.55)";rr(c,cx-52,cy-88,44,26,5);rr(c,cx+2,cy-88,44,26,5);
+  c.fillStyle="#ffd9a0";c.fillRect(cx+88,cy-46,7,8);
+  wheel(c,cx-56,cy-12,t*14);wheel(c,cx+58,cy-12,t*14);
+  grain(c,Math.floor(t*24),.06,260);   // baked into the footage: moves only when playback moves
+  const vg=c.createRadialGradient(W/2,H/2,H*.35,W/2,H/2,H*.95);vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(0,0,0,.45)");
+  c.fillStyle=vg;c.fillRect(0,0,W,H);
+}
+
+// ---------- recap video: clips with photo stops and title cards ----------
+function mk(){const c=document.createElement("canvas");c.width=W;c.height=H;return c}
+function snapshot(t){const c=mk();drawDrive(c.getContext("2d"),t);return c}
+function pSea(c,w,h){
+  const g=c.createLinearGradient(0,0,0,h*.62);g.addColorStop(0,"#3a2350");g.addColorStop(.6,"#e0705a");g.addColorStop(1,"#f7b267");c.fillStyle=g;c.fillRect(0,0,w,h*.62);
+  c.fillStyle="#ffe2a8";c.beginPath();c.arc(w*.52,h*.62,38,Math.PI,0);c.fill();
+  const s=c.createLinearGradient(0,h*.62,0,h);s.addColorStop(0,"#3b2d55");s.addColorStop(1,"#141428");c.fillStyle=s;c.fillRect(0,h*.62,w,h*.38);
+  c.fillStyle="rgba(255,214,150,.55)";for(let i=0;i<9;i++){const y=h*.64+i*12,ww=70-i*6+(i%2)*14;c.fillRect(w*.52-ww/2,y,ww,3)}
+}
+function pLighthouse(c,w,h){
+  const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,"#2b2350");g.addColorStop(.7,"#b8607a");g.addColorStop(1,"#e89a6a");c.fillStyle=g;c.fillRect(0,0,w,h);
+  c.fillStyle="rgba(255,240,190,.18)";c.beginPath();c.moveTo(w*.7,h*.27);c.lineTo(0,h*.08);c.lineTo(0,h*.42);c.closePath();c.fill();
+  c.fillStyle="#241a33";c.fillRect(0,h*.78,w,h*.22);
+  c.fillStyle="#140e18";c.beginPath();c.moveTo(w*.42,h);c.lineTo(w*.55,h*.66);c.lineTo(w,h*.62);c.lineTo(w,h);c.closePath();c.fill();
+  const bx=w*.7,by=h*.65;
+  c.fillStyle="#efe9e1";c.beginPath();c.moveTo(bx-18,by);c.lineTo(bx-12,by-120);c.lineTo(bx+12,by-120);c.lineTo(bx+18,by);c.closePath();c.fill();
+  c.fillStyle="#c84a4a";c.fillRect(bx-16,by-40,32,14);c.fillRect(bx-14,by-84,28,14);
+  c.fillStyle="#1a1216";c.fillRect(bx-15,by-140,30,20);c.fillStyle="#ffe49a";c.fillRect(bx-9,by-136,18,12);
+  c.fillStyle="#1a1216";c.beginPath();c.moveTo(bx-17,by-140);c.lineTo(bx,by-154);c.lineTo(bx+17,by-140);c.fill();
+}
+function pCat(c,w,h){
+  c.fillStyle="#2a1f24";c.fillRect(0,0,w,h);
+  const g=c.createLinearGradient(0,40,0,h*.72);g.addColorStop(0,"#5a3a6a");g.addColorStop(1,"#f2a066");c.fillStyle=g;c.fillRect(70,30,w-140,h*.72-30);
+  c.fillStyle="#ffd99a";c.beginPath();c.arc(w*.68,h*.55,26,0,7);c.fill();
+  c.fillStyle="#1a1216";c.fillRect(w/2-4,30,8,h*.72-30);c.fillRect(70,h*.38,w-140,7);
+  c.fillStyle="#3a2c30";c.fillRect(50,h*.72,w-100,16);
+  c.fillStyle="#0d0a0e";const x=w*.4,y=h*.72;
+  c.beginPath();c.ellipse(x,y-46,40,48,0,0,7);c.fill();
+  c.beginPath();c.arc(x+4,y-104,27,0,7);c.fill();
+  c.beginPath();c.moveTo(x-18,y-120);c.lineTo(x-14,y-146);c.lineTo(x-2,y-128);c.fill();
+  c.beginPath();c.moveTo(x+10,y-128);c.lineTo(x+24,y-146);c.lineTo(x+28,y-118);c.fill();
+  c.strokeStyle="#0d0a0e";c.lineWidth=10;c.lineCap="round";c.beginPath();c.moveTo(x+34,y-8);c.quadraticCurveTo(x+80,y-4,x+70,y-44);c.stroke();
+}
+function polaroid(inner,caption,rot){
+  const c=mk(),x=c.getContext("2d");
+  const bg=x.createLinearGradient(0,0,W,H);bg.addColorStop(0,"#1b1418");bg.addColorStop(1,"#2a1d26");x.fillStyle=bg;x.fillRect(0,0,W,H);
+  x.save();x.translate(W/2,H/2);x.rotate(rot);
+  x.fillStyle="rgba(0,0,0,.4)";x.fillRect(-254,-212,524,444);
+  x.fillStyle="#f4f1ea";x.fillRect(-262,-222,524,444);
+  x.save();x.translate(-240,-200);x.beginPath();x.rect(0,0,480,320);x.clip();inner(x,480,320);x.restore();
+  x.fillStyle="#3a3238";x.font="italic 24px Georgia, 'Times New Roman', serif";x.textAlign="center";x.fillText(caption,0,174);
+  x.restore();return c;
+}
+function titleCard(big,small){
+  const c=mk(),x=c.getContext("2d");x.fillStyle="#0c0a0d";x.fillRect(0,0,W,H);
+  x.textAlign="center";x.fillStyle="#f4ece2";x.font="800 84px system-ui, sans-serif";x.fillText(big,W/2,H/2+10);
+  x.fillStyle="#a8999f";x.font="italic 26px Georgia, serif";x.fillText(small,W/2,H/2+60);return c;
+}
+const fit=src=>(c,w,h)=>c.drawImage(src,0,0,W,H,0,0,w,h);
+const PHOTOS=[
+  polaroid(fit(snapshot(37.2)),"the van, mile 12",-.03),
+  polaroid(pSea,"sunset at Pfeiffer, 6:12 pm",.025),
+  polaroid(pCat,"motel cat, room 6",-.015),
+  polaroid(pLighthouse,"Point Sur lighthouse",.03),
+  polaroid(fit(snapshot(212.5)),"somewhere past Gorda",-.02)
+];
+const TITLES=[titleCard("Day 2","Highway 1, southbound"),titleCard("Mile 41","the long way round"),titleCard("Last light","pulled over to watch it go")];
+const RECAP=[["clip",4],["photo",4],["photo",3],["clip",5],["title",3],["photo",5],["clip",3],["photo",4]];
+const RECAP_LEN=RECAP.reduce((a,s)=>a+s[1],0);
+function recapSeg(t){const cyc=Math.floor(t/RECAP_LEN);let r=t-cyc*RECAP_LEN,pi=0;for(const [k,len] of RECAP){if(r<len)return{k,cyc,pi};if(k==="photo")pi++;r-=len}return{k:"clip",cyc,pi}}
+function onStill(){return G.lv.video==="recap"&&recapSeg(vt).k!=="clip"}
+
 function draw(now){
   ctx.setTransform(cv.width/W,0,0,cv.height/H,0,0);
-  const t=vt;
-  const g=ctx.createLinearGradient(0,0,0,H*.72);g.addColorStop(0,"#2b1d4a");g.addColorStop(.55,"#c8566a");g.addColorStop(1,"#f6a85c");
-  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-  const sx=W*.7,sy=H*.52;
-  const sg=ctx.createRadialGradient(sx,sy,10,sx,sy,170);sg.addColorStop(0,"rgba(255,230,170,.9)");sg.addColorStop(1,"rgba(255,200,120,0)");
-  ctx.fillStyle=sg;ctx.fillRect(sx-170,sy-170,340,340);
-  ctx.fillStyle="#ffe2a8";ctx.beginPath();ctx.arc(sx,sy,46,0,7);ctx.fill();
-  ctx.fillStyle="rgba(255,215,215,.33)";
-  for(let i=0;i<6;i++){cloud(mod(i*230-t*14,W+320)-160,55+(i*57)%150,.8+(i%3)*.3)}
-  ctx.strokeStyle="rgba(40,18,40,.75)";ctx.lineWidth=2;
-  for(let i=0;i<5;i++){const x=mod(i*190+t*42,W+200)-100,y=140+i*16+Math.sin(t*1.3+i)*8,f=Math.sin(t*9+i*2)*6;ctx.beginPath();ctx.moveTo(x-10,y-f);ctx.quadraticCurveTo(x-5,y-2,x,y);ctx.quadraticCurveTo(x+5,y-2,x+10,y-f);ctx.stroke()}
-  ridge(H*.63,70,t*10,"#7a3f72",.006,.013);
-  ridge(H*.71,46,t*36,"#432549",.011,.023);
-  ctx.fillStyle="#2a1e2e";ctx.fillRect(0,H*.755,W,H*.03);
-  ctx.fillStyle="#1d1420";ctx.fillRect(0,H*.785,W,H*.215);
-  for(let x=-mod(t*240,210);x<W+40;x+=210){ctx.fillStyle="#140d16";ctx.fillRect(x,H*.58,6,H*.2);ctx.fillRect(x-16,H*.58,38,4)}
-  ctx.fillStyle="#f3d38a";for(let x=-mod(t*330,120);x<W;x+=120)ctx.fillRect(x,H*.9,62,6);
-  // van
-  const cx=W*.36,cy=H*.80+Math.sin(t*11)*1.5;
-  ctx.fillStyle="#120c15";rr(cx-95,cy-62,190,48,12);rr(cx-62,cy-96,118,40,12);
-  ctx.fillStyle="rgba(246,168,92,.55)";rr(cx-52,cy-88,44,26,5);rr(cx+2,cy-88,44,26,5);
-  ctx.fillStyle="#ffd9a0";ctx.fillRect(cx+88,cy-46,7,8);
-  wheel(cx-56,cy-12,t*14);wheel(cx+58,cy-12,t*14);
-  // grain + vignette
-  let s=fx.grainLive?Math.floor(now/42):Math.floor(t*24);
-  ctx.fillStyle="rgba(255,255,255,.06)";
-  for(let i=0;i<260;i++){s=(s*1103515245+12345)&0x7fffffff;const x=s%W;s=(s*1103515245+12345)&0x7fffffff;ctx.fillRect(x,s%H,2,2)}
-  const vg=ctx.createRadialGradient(W/2,H/2,H*.35,W/2,H/2,H*.95);vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(0,0,0,.45)");
-  ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+  if(G.lv.video==="recap"){
+    const s=recapSeg(vt);
+    if(s.k==="clip")drawDrive(ctx,vt);
+    else if(s.k==="photo")ctx.drawImage(PHOTOS[(s.cyc*4+s.pi)%PHOTOS.length],0,0);
+    else ctx.drawImage(TITLES[s.cyc%TITLES.length],0,0);
+  }else drawDrive(ctx,vt);
+  // Ghost: a player-side film filter, driven by the wall clock, so it moves even when paused or on a photo.
+  if(G.lv.grain&&G.phase!=="idle"){grain(ctx,Math.floor(now/42),.09,420);ctx.fillStyle="rgba(255,240,220,"+(.015+.015*Math.sin(now/90))+")";ctx.fillRect(0,0,W,H)}
 }
 
 // ---------- ui helpers ----------
 const fmt=s=>{s=Math.max(0,Math.floor(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
 function flash(isPlaying){$("flashPath").setAttribute("d",isPlaying?PLAY:PAUSE);const f=$("flash");f.classList.remove("go");void f.offsetWidth;f.classList.add("go")}
 let toastT;
-function toast(msg,cls){const t=$("toast");t.textContent=msg;t.className="toast "+(cls||"");clearTimeout(toastT);toastT=setTimeout(()=>{t.textContent=""},2200)}
+function toast(msg,cls){const t=$("toast");t.textContent=msg;t.className="toast "+(cls||"");clearTimeout(toastT);toastT=setTimeout(()=>{t.textContent=""},2600)}
 function edge(cls){const e=$("edge");e.className="edge "+cls;setTimeout(()=>{e.className="edge"},cls==="bad"?260:160)}
 function shake(){player.classList.remove("shake");void player.offsetWidth;player.classList.add("shake")}
 function setCue(text,dim){const c=$("cueWord");c.textContent=text;c.className="cue-word"+(dim?" dim":"")}
 const stateWord=p=>p?"playing":"paused";
 function hud(){
-  $("hudLevel").textContent=G.phase==="idle"?"":(G.lvIdx+1)+" · "+G.lv.name;
-  $("hudProg").textContent=G.phase==="idle"?"":(G.lv.endless?"score "+G.score:G.progress+"/"+G.lv.n);
-  $("hudHearts").textContent=G.phase==="idle"?"":"♥".repeat(Math.max(0,G.hearts))+"♡".repeat(Math.max(0,3-G.hearts));
+  const idle=G.phase==="idle";
+  $("hudLevel").textContent=idle?"":(G.lvIdx+1)+" · "+G.lv.name;
+  $("hudProg").textContent=idle?"":(G.lv.endless?"score "+G.score:G.progress+"/"+G.lv.n);
+  $("hudHearts").textContent=idle?"":"♥".repeat(Math.max(0,G.hearts))+"♡".repeat(Math.max(0,3-G.hearts));
 }
+function setVideoMeta(){$("vidTitle").textContent=vid().title;$("vidSub").textContent=vid().sub}
 
-// ---------- effects ----------
-function freeze(sec){fx.frozen=Math.max(fx.frozen,sec);fx.spin=G.lv.ghost&&Math.random()<.5}
-function updateFx(dt,now){
+// ---------- network lag (honest: picture AND timer stop, spinner shows) ----------
+function startLag(sec){if(playing)fx.lag=Math.max(fx.lag,sec)}
+function updateFx(dt){
   const L=G.lv,active=G.phase==="gap"||G.phase==="cue";
-  if(fx.frozen>0){fx.frozen-=dt;if(fx.frozen<=0){fx.frozen=0;fx.spin=false}}
-  if(fx.drift>0)fx.drift-=dt;
-  if(active&&L.stutter&&playing&&fx.frozen<=0&&Math.random()<dt*.28)freeze(.4+Math.random()*1.3);
-  if(active&&L.ghost&&!playing&&fx.drift<=0&&Math.random()<dt*.3)fx.drift=.5+Math.random()*1.2;
-  if(active&&L.ghost&&Math.random()<dt*.16)flash(Math.random()<.5);
-  fx.grainLive=active&&L.ghost&&!playing;
-  if(!playing){fx.frozen=0;fx.spin=false}
-  $("spinner").style.display=(playing&&fx.frozen>0&&fx.spin)?"block":"none";
+  if(!playing)fx.lag=0;
+  if(fx.lag>0)fx.lag=Math.max(0,fx.lag-dt);
+  if(active&&L.lag&&playing&&fx.lag<=0&&Math.random()<dt*.22)startLag(.6+Math.random()*1.2);
+  $("spinner").style.display=(playing&&fx.lag>0)?"block":"none";
 }
+function context(){return(playing&&fx.lag>0)?"lag":(onStill()?"still":null)}
+function hint(ctxName){return ctxName==="lag"?" That was buffering, not a pause.":ctxName==="still"?" That was a photo; the timer would have told you.":""}
 
 // ---------- game ----------
 function press(){
   if(G.phase!=="gap"&&G.phase!=="cue")return;
-  const now=performance.now();
+  const now=performance.now(),ctxBefore=context();
   const was=playing;playing=!playing;flash(playing);
-  if(!playing)fx.frozen=0;
+  if(!playing)fx.lag=0;
+  else if(G.lv.lag&&Math.random()<.4)startLag(.5+Math.random()*1.0);   // resuming often re-buffers
   if(G.phase==="cue"){
     const c=G.cue;c.presses++;
-    if(c.required){success(now,(now-c.start));}
-    else{G.stats.flinch++;fail(now,"Flinched. It was already "+stateWord(was)+", so the cue asked for nothing. Now it's "+stateWord(playing)+".",c.duringFreeze)}
+    if(c.required)success(now,now-c.start);
+    else{G.stats.flinch++;fail(now,"Flinched. It was already "+stateWord(was)+", so the cue asked for nothing. Now it's "+stateWord(playing)+"."+hint(ctxBefore),ctxBefore)}
   }else{
     if(now<G.graceUntil){toast("Late. Now it's "+stateWord(playing)+".","bad");return}
     G.stats.unprompted++;
-    fail(now,"Nobody asked. Now it's "+stateWord(playing)+".",fx.frozen>0)
+    fail(now,"Nobody asked. Now it's "+stateWord(playing)+".",ctxBefore);
   }
 }
 function pickCue(){
@@ -260,82 +352,96 @@ function pickCue(){
   if(useWords&&Math.random()<.8){const opts=WORDS.filter(w=>w.p===target);text=opts[Math.floor(Math.random()*opts.length)].t}
   return{text,target};
 }
-function windowLen(){const L=G.lv;return L.endless?Math.max(.85,L.window-G.score*.035):L.window}
+function windowLen(){const L=G.lv;return L.endless?Math.max(1.1,L.window-G.score*.03):L.window}
 function newCue(now){
   const {text,target}=pickCue();
-  G.cue={text,target,required:target!==playing,start:now,presses:0,win:windowLen(),duringFreeze:false};
-  if(G.lv.stutter&&playing&&Math.random()<.45)freeze(.5+Math.random()*1.2);
-  if(G.lv.ghost&&!playing&&Math.random()<.4)fx.drift=.6+Math.random()*1.0;
-  G.cue.duringFreeze=fx.frozen>0||fx.drift>0;
-  if(G.cue.duringFreeze)G.stats.freezeCues++;
+  if(G.lv.lag&&playing&&Math.random()<.45)startLag(.6+Math.random()*1.2);   // lag tends to hit right when you look
+  G.cue={text,target,required:target!==playing,start:now,presses:0,win:windowLen()};
   if(G.cue.required)G.stats.actionCues++;else G.stats.dodgeCues++;
   setCue(text,false);$("cueBar").classList.add("on");
   G.phase="cue";
 }
-function clearCue(now){G.cue=null;G.lastCueEnd=now;setCue("",true);$("cueBar").classList.remove("on")}
-function gapLen(){const base=G.lv.endless?Math.max(.35,1-G.score*.015):.7;return(base+Math.random()*base*1.2)*1000}
+function clearCue(){G.cue=null;setCue("",true);$("cueBar").classList.remove("on")}
+function scheduleGap(now,ms){G.phase="gap";G.nextAt=now+ms;G.waitStill=!!G.lv.stillBias&&Math.random()<.6}
+function gapLen(){const base=G.lv.endless?Math.max(.4,1-G.score*.012):.7;return(base+Math.random()*base*1.2)*1000}
 function success(now,rt){
   const c=G.cue;
   if(c.required){G.stats.actionHit++;G.stats.rts.push(rt);toast(Math.round(rt)+" ms","good")}
   else{G.stats.dodgeHeld++;toast("Held.","good")}
-  if(c.duringFreeze)G.stats.freezeOk++;
-  edge("good");clearCue(now);
+  edge("good");clearCue();
   G.progress++;G.score++;hud();
   if(!G.lv.endless&&G.progress>=G.lv.n){G.phase="over";setTimeout(()=>finish(true),550);return}
-  G.phase="gap";G.nextAt=now+gapLen();
+  scheduleGap(now,gapLen());
 }
-function fail(now,msg,freezeRelated){
-  if(freezeRelated)G.stats.freezeErr++;
+function fail(now,msg,ctxName){
+  if(ctxName==="lag")G.stats.lagErr++;
+  if(ctxName==="still")G.stats.stillErr++;
   G.hearts--;hud();toast(msg,"bad");edge("bad");shake();
-  if(G.cue)clearCue(now);
+  if(G.cue)clearCue();
   if(G.hearts<=0){G.phase="over";setTimeout(()=>finish(false),700);return}
-  G.phase="gap";G.nextAt=now+1500;
+  scheduleGap(now,1500);
 }
 function endWindow(now){
   const c=G.cue;
-  if(c.required){G.stats.slow++;G.graceUntil=now+600;fail(now,"Too slow. It's still "+stateWord(playing)+".",c.duringFreeze)}
+  if(c.required){const cx=context();G.stats.slow++;G.graceUntil=now+600;fail(now,"Too slow. It's still "+stateWord(playing)+"."+hint(cx),cx)}
   else success(now,0);
 }
 
 function tick(now){
   const dt=Math.min(.05,(now-(tick.last||now))/1000);tick.last=now;
-  updateFx(dt,now);
-  if(playing){if(fx.frozen<=0)vt+=dt;else if(Math.random()<.035)vt+=.07}
-  else if(fx.drift>0)vt+=dt*.22;
-  if(vt>DURATION-5)vt=30;
-  if(G.phase==="gap"&&now>=G.nextAt)newCue(now);
+  updateFx(dt);
+  if(playing&&fx.lag<=0)vt+=dt;           // the ONLY thing that moves the timer
+  if(vt>vid().dur-3)vt=20;
+  if(G.phase==="gap"&&now>=G.nextAt){
+    // Still levels: prefer to drop a cue while a photo is up (waits at most 1.5s, never moves playback)
+    if(G.waitStill&&!onStill()&&now<G.nextAt+1500){}else newCue(now);
+  }
   if(G.phase==="cue"){
     const el=(now-G.cue.start)/1000;
     $("cueFill").style.width=Math.max(0,100*(1-el/G.cue.win))+"%";
     if(el>=G.cue.win)endWindow(now);
   }
   draw(now);
-  $("controls").classList.toggle("hidden",!!(G.lv.hideControls&&G.phase!=="idle"));
+  const full=G.lv.controls==="full"||G.phase==="idle";
+  $("controls").classList.toggle("hidden",!full);
+  $("chip").classList.toggle("hide",full);
+  const tl=fmt(vt)+" / "+fmt(vid().dur);
   $("ctlIcon").setAttribute("d",playing?PAUSE:PLAY);
-  $("progFill").style.width=(100*vt/DURATION)+"%";
-  $("timeLabel").textContent=fmt(vt)+" / "+fmt(DURATION);
+  $("progFill").style.width=(100*vt/vid().dur)+"%";
+  $("timeLabel").textContent=tl;$("chip").textContent=tl;
   requestAnimationFrame(tick);
 }
 
+// Leaving the tab mid-cue voids the cue instead of costing a heart.
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){
+    if(G.phase==="cue"){const c=G.cue;if(c.required)G.stats.actionCues--;else G.stats.dodgeCues--;clearCue();G.phase="gap"}
+    if(G.phase==="gap")G.phase="away";
+  }else if(G.phase==="away"){tick.last=performance.now();scheduleGap(performance.now(),1500);toast("Welcome back. Next cue in a moment.")}
+});
+
 // ---------- flow ----------
 function startLevel(i){
-  G={phase:"count",lvIdx:i,lv:LEVELS[i],hearts:3,progress:0,score:0,cue:null,nextAt:0,graceUntil:0,lastCueEnd:0,stats:newStats(),matchStreak:0};
-  playing=true;fx.frozen=0;fx.drift=0;closeOverlay();hud();$("toast").textContent="";
+  clearInterval(countIv);
+  G={phase:"count",lvIdx:i,lv:LEVELS[i],hearts:3,progress:0,score:0,cue:null,nextAt:0,graceUntil:0,stats:newStats(),matchStreak:0,waitStill:false};
+  playing=true;fx.lag=0;vt=20+Math.random()*(vid().dur*.5);
+  setVideoMeta();closeOverlay();hud();$("toast").textContent="";
   let n=3;setCue(String(n),true);
-  const iv=setInterval(()=>{n--;if(n>0){setCue(String(n),true)}else{clearInterval(iv);setCue("",true);G.phase="gap";G.nextAt=performance.now()+600}},650);
+  countIv=setInterval(()=>{n--;if(n>0)setCue(String(n),true);else{clearInterval(countIv);setCue("",true);scheduleGap(performance.now(),600)}},650);
 }
 function insight(s,win){
   const avg=s.rts.length?Math.round(s.rts.reduce((a,b)=>a+b,0)/s.rts.length):null;
-  if(s.freezeErr>=2)return`${s.freezeErr} of your mistakes came while the picture had stopped or drifted on its own. When the screen and your memory disagreed, you believed the screen.`;
+  if(s.lagErr>=2)return`${s.lagErr} of your mistakes came while the video was buffering. The spinner meant "still playing", but the frozen picture said "paused", and you believed the picture.`;
+  if(s.stillErr>=2)return`${s.stillErr} of your mistakes came on a photo or title card. The picture was still on purpose; the timer was the only honest witness.`;
   if(s.dodgeCues>=3&&s.flinch/s.dodgeCues>=.3)return`You moved on ${s.flinch} of ${s.dodgeCues} cues that asked for nothing. Your hand reacted to the word before your eyes checked the state.`;
   if(s.unprompted>=2)return`You pressed ${s.unprompted} times when no cue was showing. Once a rhythm sets in, the hand starts acting on its own.`;
-  if(s.slow>=2)return`You ran out of time ${s.slow} times. Hesitating is the other way to fail: stopping to check costs time.`;
+  if(s.slow>=2)return`You ran out of time ${s.slow} times. Hesitating is the other way to fail: checking the state costs time.`;
   if(s.dodgeCues>=3&&s.flinch===0)return`You never flinched on a cue that was already true. You were checking the state, not just reacting to the word.`;
   if(avg)return`Average reaction ${avg} ms. ${win?"Clean.":"So close."}`;
   return win?"Clean.":"Try again.";
 }
 function finish(win){
-  const s=G.stats,L=G.lv;clearCue(performance.now());
+  const s=G.stats,L=G.lv;clearCue();
   if(win&&G.lvIdx+1>unlocked){unlocked=Math.min(LEVELS.length-1,G.lvIdx+1);save("unlocked",unlocked)}
   if(L.endless&&G.score>best){best=G.score;save("best",best)}
   const avg=s.rts.length?Math.round(s.rts.reduce((a,b)=>a+b,0)/s.rts.length)+"":"—";
@@ -351,8 +457,8 @@ function finish(win){
     </div>
     <p class="insight">${insight(s,win)}</p>
     <div>
-      ${next?`<button class="btn" data-go="${G.lvIdx+1}">Next: ${LEVELS[G.lvIdx+1].name}</button>`:""}
-      <button class="btn ${next?"ghost":""}" data-intro="${G.lvIdx}">${win&&!L.endless?"Replay":"Retry"}</button>
+      ${next?`<button class="btn" data-intro="${G.lvIdx+1}">Next: ${LEVELS[G.lvIdx+1].name}</button>`:""}
+      <button class="btn ${next?"ghost":""}" data-go="${G.lvIdx}">${win&&!L.endless?"Replay":"Retry"}</button>
       <button class="btn ghost" data-menu>Levels</button>
     </div>`);
   G.phase="idle";hud();setCue("",true);
@@ -364,12 +470,14 @@ function intro(i){
     <div><button class="btn" data-go="${i}">Start</button><button class="btn ghost" data-menu>Levels</button></div>`);
 }
 function menu(){
-  G.phase="idle";G.lv=LEVELS[0];hud();setCue("",true);playing=true;
+  clearInterval(countIv);
+  G.phase="idle";G.lv=LEVELS[0];G.cue=null;hud();setCue("",true);playing=true;fx.lag=0;setVideoMeta();
   showOverlay(`<h1>Un<span>Paws</span></h1>
     <p>A video. A word. One button.</p>
     <p style="color:var(--mute)">Toggle with <span class="kbd">Space</span>, <span class="kbd">K</span> or a tap on the video. Make the video match the cue, and only press when pressing is the answer.</p>
     <div class="levels">${LEVELS.map((L,i)=>`<button class="lv" data-intro="${i}" ${i>unlocked?"disabled":""}><b>${i+1}. ${L.name}</b><small>${i>unlocked?"locked":(L.endless?"best "+best:"open")}</small></button>`).join("")}</div>
-    <div><button class="btn" data-intro="${Math.min(unlocked,LEVELS.length-1)}">${unlocked?"Continue":"Play"}</button></div>`);
+    <div><button class="btn" data-intro="${Math.min(unlocked,LEVELS.length-1)}">${unlocked?"Continue":"Play"}</button></div>
+    <div class="ver">v${VERSION}</div>`);
 }
 function showOverlay(html){card.innerHTML=html;overlay.classList.remove("hide");const b=card.querySelector(".btn");if(b)b.focus()}
 function closeOverlay(){overlay.classList.add("hide");if(document.activeElement)document.activeElement.blur()}
@@ -380,11 +488,14 @@ card.addEventListener("click",e=>{
   else if(b.hasAttribute("data-menu"))menu();
 });
 $("home").addEventListener("click",menu);
+$("verFoot").textContent="v"+VERSION;
 
 // ---------- input ----------
 document.addEventListener("keydown",e=>{
-  const overlayOpen=!overlay.classList.contains("hide");
-  if(overlayOpen){if(e.key==="Enter"||e.code==="Space"){const b=document.activeElement&&document.activeElement.closest?document.activeElement.closest("button"):null;if(!b){const f=card.querySelector(".btn");if(f){e.preventDefault();f.click()}}}return}
+  if(!overlay.classList.contains("hide")){
+    if(e.key==="Enter"||e.code==="Space"){const onBtn=document.activeElement&&document.activeElement.tagName==="BUTTON";if(!onBtn){const f=card.querySelector(".btn");if(f){e.preventDefault();f.click()}}}
+    return;
+  }
   if(e.code==="Space"||e.key==="k"||e.key==="K"){e.preventDefault();if(!e.repeat)press()}
 });
 player.addEventListener("pointerdown",e=>{e.preventDefault();press()});
