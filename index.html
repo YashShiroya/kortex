@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UnPaws v3.0</title>
+<title>UnPaws v3.1</title>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
@@ -25,12 +25,14 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
 .btnA{background:#d4d0c8;border:2px solid;border-color:#fff #404040 #404040 #fff;padding:2px 10px;font:inherit;font-size:11px;color:#000;cursor:pointer}
 .btnA:active{border-color:#404040 #fff #fff #404040}
 .btnA.dis{color:#8a8a8a;text-shadow:1px 1px 0 #fff;cursor:default}
-.main{flex:1;display:grid;grid-template-columns:62% 38%;gap:6px;padding:8px 6px 6px;min-height:0}
+.main{flex:1;display:grid;grid-template-columns:minmax(0,62fr) minmax(0,38fr);grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"feed cmd" "feed stat" "log trend";gap:12px 6px;padding:10px 6px 6px;min-height:0}
+.main>.grp{min-width:0}
+.a-feed{grid-area:feed}.a-cmd{grid-area:cmd}.a-stat{grid-area:stat}.a-log{grid-area:log;display:flex;flex-direction:column}.a-trend{grid-area:trend;align-self:start}
 .grp{border:1px solid #808080;box-shadow:inset 1px 1px 0 #fff;padding:14px 6px 6px;position:relative;background:#d4d0c8;min-height:0}
 .grp>.cap{position:absolute;top:-8px;left:8px;background:#d4d0c8;padding:0 4px;font-weight:700;font-size:11px}
 .feed{display:flex;flex-direction:column;gap:6px}
-.feedwin{border:2px solid;border-color:#404040 #fff #fff #404040;background:#000;aspect-ratio:16/9;position:relative;cursor:pointer;flex:none}
-.feedwin canvas{width:100%;height:100%;display:block}
+.feedwin{border:2px solid;border-color:#404040 #fff #fff #404040;background:#000;aspect-ratio:16/9;width:100%;position:relative;cursor:pointer;flex:none;touch-action:manipulation}
+.feedwin canvas{width:100%;height:100%;max-width:100%;display:block}
 .spin{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border:4px solid rgba(255,255,255,.22);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite;display:none;pointer-events:none}
 @keyframes sp{to{transform:rotate(360deg)}}
 .flash{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 0 transparent}
@@ -49,7 +51,6 @@ td.cls{width:34px;text-align:center}
 td.W{background:#ffd800}td.A{background:#e0281e;color:#fff}td.S{background:#3fae3f;color:#fff}
 .logwrap{flex:1;min-height:0;overflow:hidden;border:2px solid;border-color:#404040 #fff #fff #404040;background:#fff}
 .logwrap table{border:0;table-layout:fixed}
-.right{display:flex;flex-direction:column;gap:12px;min-height:0}
 .cmd .lcd{font-size:clamp(28px,4.6vw,58px);text-align:center;padding:6px 4px;min-height:1.3em;white-space:nowrap;overflow:hidden}
 .cmd .lcd.idle{color:#1f6a1f}
 .barA{height:14px;border:2px solid;border-color:#404040 #fff #fff #404040;background:#fff;margin-top:6px;padding:1px}
@@ -58,7 +59,7 @@ svg.trend{width:100%;height:64px;background:#000;border:2px solid;border-color:#
 .fkeys{display:grid;grid-template-columns:repeat(8,1fr) 1.7fr;gap:4px;padding:6px;border-top:1px solid #808080;background:#c0bcb4;flex:none}
 .fk{height:42px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;font-size:10px;padding:0}
 .fk b{font-size:12px}
-.act{background:#1f8a1f;color:#fff;font-weight:700;font-size:13px;border-color:#7fe07f #0a3a0a #0a3a0a #7fe07f}
+.act{touch-action:manipulation;background:#1f8a1f;color:#fff;font-weight:700;font-size:13px;border-color:#7fe07f #0a3a0a #0a3a0a #7fe07f}
 .act:active{border-color:#0a3a0a #7fe07f #7fe07f #0a3a0a}
 /* dialogs */
 .dlgWrap{position:absolute;inset:0;background:rgba(40,40,40,.45);display:flex;align-items:center;justify-content:center;z-index:5}
@@ -80,53 +81,89 @@ svg.trend{width:100%;height:64px;background:#000;border:2px solid;border-color:#
 .insight{font-style:italic}
 .kbd{display:inline-block;border:1px solid #808080;border-bottom-width:2px;background:#fff;border-radius:3px;padding:0 5px;font-size:11px;font-family:"Courier New",monospace}
 .foot{color:#9a9a9a;font:12px Tahoma,Verdana,sans-serif;margin-top:8px;text-align:center}
-@media(max-width:720px){.main{grid-template-columns:1fr}.right{display:none}.fkeys{grid-template-columns:repeat(4,1fr) 2fr}.fk.minor{display:none}}
+@media (max-width:760px),(orientation:portrait) and (max-width:1024px){
+  html,body{min-height:0}
+  body{padding:0;justify-content:flex-start;align-items:stretch;display:block}
+  .hmi{width:100%;aspect-ratio:auto;min-height:100vh;min-height:100dvh;border-width:0;box-shadow:none}
+  .top{height:auto;min-height:44px}
+  .ttl{padding:4px 8px}.ttl b{font-size:13px}.ttl span{font-size:10px;white-space:normal}
+  .clock{padding:0 8px;font-size:10px}.clock span:last-child{display:none}
+  .alarm{height:auto;min-height:26px;font-size:11px}
+  .main{flex:none;grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-template-areas:"feed" "cmd" "stat" "log";gap:12px;padding:10px 6px 8px}
+  .a-trend{display:none}
+  .a-log .logwrap{height:150px;flex:none}
+  .cmd .lcd{font-size:clamp(30px,11vw,52px)}
+  .fkeys{position:sticky;bottom:0;z-index:4;grid-template-columns:1fr 1fr 1fr 2.2fr;box-shadow:0 -2px 8px rgba(0,0,0,.25)}
+  .fk.minor{display:none}
+  .fk{height:52px}.act{font-size:15px}
+  .dlgWrap{position:fixed;z-index:10}
+  .dlg{max-height:92vh;overflow:auto}
+  .lvgrid{grid-template-columns:repeat(2,1fr)}
+  .foot{display:none}
+}
+@media (orientation:landscape) and (max-height:540px){
+  html,body{min-height:0}
+  body{padding:0;display:block}
+  .hmi{width:100%;aspect-ratio:auto;min-height:100vh;min-height:100dvh;border-width:0;box-shadow:none}
+  .top{height:38px}.logo{font-size:14px;padding:0 8px}.ttl b{font-size:12px}.ttl span{font-size:10px}.clock{font-size:10px}.clock span:last-child{display:none}
+  .alarm{height:22px;font-size:11px}
+  .main{flex:none;grid-template-columns:minmax(0,58fr) minmax(0,42fr);grid-template-rows:auto auto;grid-template-areas:"feed cmd" "feed stat";gap:10px 6px;padding:8px 6px 6px}
+  .a-log,.a-trend{display:none}
+  .feedwin{max-width:calc((100dvh - 168px)*16/9);margin:0 auto}
+  .stat{font-size:10px;gap:6px;white-space:nowrap}.stat .lcd{font-size:16px}
+  .cmd .lcd{font-size:clamp(24px,6vh,40px);padding:3px}
+  .a-stat td,.a-stat th{padding:1px 4px;font-size:10px}
+  .fkeys{position:sticky;bottom:0;z-index:4;grid-template-columns:1fr 1fr 1fr 2.2fr}
+  .fk.minor{display:none}.fk{height:40px}
+  .dlgWrap{position:fixed;z-index:10}.dlg{max-height:94vh;overflow:auto}.lvgrid{grid-template-columns:repeat(4,1fr)}
+  .foot{display:none}
+}
 </style>
 </head>
 <body>
 <div class="hmi" id="hmi">
   <div class="top">
-    <div class="logo">KORTEX<small>FW 3.0</small></div>
+    <div class="logo">KORTEX<small>FW 3.1</small></div>
     <div class="ttl"><b>UNIT 4471 · SHIFT-END CHECK (SEC-07)</b><span id="lvSub">Plant: Sector West / Rack 12 / Bay 0441 · Mode: STANDBY</span></div>
     <div class="clock"><span>07.11.2103</span><span id="clk">00:00:00</span><span>OPR: AUTO-L2</span></div>
   </div>
   <div class="alarm" id="alarm"><div class="ico">!</div><span id="alarmTxt">W 0412 · Rest request pending: operator approval required</span><button class="btnA ack" id="ack">ACK</button></div>
   <div class="main">
-    <div class="grp feed"><span class="cap">VISUAL CORTEX TEST FEED · CH 02 · <span id="tapeLbl">TAPE 0412</span></span>
+    <div class="grp feed a-feed"><span class="cap">VISUAL CORTEX TEST FEED · CH 02 · <span id="tapeLbl">TAPE 0412</span></span>
       <div class="feedwin" id="feedwin"><canvas id="feed" width="960" height="540"></canvas><div class="spin" id="spin"></div><div class="flash" id="flash"></div></div>
       <div class="stat">
         <span><i class="led g"></i>FEED</span><span><i class="led g"></i>LINK</span><span><i class="led o" id="ledBuf"></i>BUFFER</span>
         <span style="margin-left:auto">POSITION</span><span class="lcd" id="pos">0:00:00</span></div>
+    </div>
+    <div class="grp cmd a-cmd"><span class="cap">COMMAND</span>
+      <div class="lcd idle" id="cmd">STANDBY</div>
+      <div class="barA"><i id="cbar"></i></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px"><span id="winTxt">Response window —</span><span id="cueN"></span></div>
+    </div>
+    <div class="grp a-stat"><span class="cap">UNIT STATUS</span>
+      <table><tr><th>Tag</th><th style="text-align:right">Value</th></tr>
+        <tr><td>Integrity</td><td class="v" id="integ">3 / 3</td></tr>
+        <tr><td>Mean latency</td><td class="v" id="lat">— ms</td></tr>
+        <tr><td>Unprompted actuations</td><td class="v" id="unpr">0</td></tr>
+        <tr><td>Cortical load</td><td class="v" id="load">82.0 %</td></tr>
+        <tr><td>Shift elapsed</td><td class="v" id="shift">16:02:11</td></tr>
+        <tr><td>Rest queue</td><td class="v" id="rest">00:04:00</td></tr></table>
+    </div>
+    <div class="grp a-log"><span class="cap">EVENT LOG</span>
       <div class="logwrap"><table><colgroup><col style="width:70px"><col style="width:40px"><col></colgroup><thead><tr><th>Time</th><th>Cl.</th><th>Event</th></tr></thead><tbody id="log"></tbody></table></div>
     </div>
-    <div class="right">
-      <div class="grp cmd"><span class="cap">COMMAND</span>
-        <div class="lcd idle" id="cmd">STANDBY</div>
-        <div class="barA"><i id="cbar"></i></div>
-        <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px"><span id="winTxt">Response window —</span><span id="cueN"></span></div>
-      </div>
-      <div class="grp"><span class="cap">UNIT STATUS</span>
-        <table><tr><th>Tag</th><th style="text-align:right">Value</th></tr>
-          <tr><td>Integrity</td><td class="v" id="integ">3 / 3</td></tr>
-          <tr><td>Mean latency</td><td class="v" id="lat">— ms</td></tr>
-          <tr><td>Unprompted actuations</td><td class="v" id="unpr">0</td></tr>
-          <tr><td>Cortical load</td><td class="v" id="load">82.0 %</td></tr>
-          <tr><td>Shift elapsed</td><td class="v" id="shift">16:02:11</td></tr>
-          <tr><td>Rest queue</td><td class="v" id="rest">00:04:00</td></tr></table>
-      </div>
-      <div class="grp"><span class="cap">TREND · CORTICAL LOAD (60 s)</span>
-        <svg class="trend" viewBox="0 0 300 64" preserveAspectRatio="none"><polyline id="trend" fill="none" stroke="#3cff3c" stroke-width="1.5" points=""/><line x1="0" y1="10" x2="300" y2="10" stroke="#ff3c3c" stroke-dasharray="4 3" stroke-width="1"/></svg>
-      </div>
+    <div class="grp a-trend"><span class="cap">TREND · CORTICAL LOAD (60 s)</span>
+      <svg class="trend" viewBox="0 0 300 64" preserveAspectRatio="none"><polyline id="trend" fill="none" stroke="#3cff3c" stroke-width="1.5" points=""/><line x1="0" y1="10" x2="300" y2="10" stroke="#ff3c3c" stroke-dasharray="4 3" stroke-width="1"/></svg>
     </div>
   </div>
   <div class="fkeys">
-    <button class="btnA fk" data-menu><b>F1</b>LEVELS</button><button class="btnA fk minor" id="fRetry"><b>F2</b>RESTART</button><button class="btnA fk minor dis"><b>F3</b>TREND</button><button class="btnA fk minor dis"><b>F4</b>LOG</button>
-    <button class="btnA fk minor dis"><b>F5</b>—</button><button class="btnA fk minor dis"><b>F6</b>—</button><button class="btnA fk minor dis"><b>F7</b>CALIB.</button><button class="btnA fk dis"><b>F8</b>REST</button>
+    <button class="btnA fk" data-menu><b>F1</b>LEVELS</button><button class="btnA fk" id="fRetry"><b>F2</b>RESTART</button><button class="btnA fk minor dis"><b>F3</b>TREND</button><button class="btnA fk minor dis"><b>F4</b>LOG</button>
+    <button class="btnA fk minor dis"><b>F5</b>—</button><button class="btnA fk minor dis"><b>F6</b>—</button><button class="btnA fk minor dis"><b>F7</b>CALIB.</button><button class="btnA fk dis f8"><b>F8</b>REST</button>
     <button class="btnA fk act" id="act">ACTUATE<br>[SPACE]</button>
   </div>
   <div class="dlgWrap" id="dlgWrap"><div class="dlg"><div class="tb"><span id="dlgTitle">KORTEX · SEC-07</span><span>×</span></div><div class="body" id="card"></div></div></div>
 </div>
-<div class="foot">One button: <span class="kbd">Space</span> <span class="kbd">K</span>, a click on the feed, or ACTUATE · UnPaws v3.0</div>
+<div class="foot">One button: <span class="kbd">Space</span> <span class="kbd">K</span>, a click on the feed, or ACTUATE · UnPaws v3.1</div>
 <script>
 (()=>{
 // ===================================================================== utils
@@ -648,7 +685,7 @@ function picnic(c,t){
 
 
 // ===================================================================== UnPaws v3.0 game
-const VERSION="3.0";
+const VERSION="3.1";
 const $=id=>document.getElementById(id);
 
 // ---------- tapes (look per scene) ----------
@@ -929,7 +966,7 @@ function menu(){
     <p>One actuator: <span class="kbd">Space</span>, <span class="kbd">K</span>, a click on the feed, or the green ACTUATE key.</p>
     <div class="lvgrid">${LEVELS.map((L,i)=>`<button class="btnA" data-intro="${i}" ${i>unlocked?"disabled":""}><b>${i+1}. ${L.name}</b>${i>unlocked?"locked":(L.endless?"best "+best:"open")}</button>`).join("")}</div>
     <div class="btns"><button class="btnA def" data-intro="${Math.min(unlocked,LEVELS.length-1)}">${unlocked?"Continue":"Begin check"}</button></div>
-    <p style="color:#777;font-size:11px;margin-top:10px">UnPaws v${VERSION}. Version 2.0 stays in its own file.</p>`);
+    <p style="color:#777;font-size:11px;margin-top:10px">UnPaws v${VERSION}. Versions 2.0 and 3.0 stay in their own files.</p>`);
 }
 function showDlg(title,html){$("dlgTitle").textContent=title;$("card").innerHTML=html;$("dlgWrap").classList.remove("hide");const b=$("card").querySelector(".def")||$("card").querySelector(".btnA");if(b)b.focus()}
 function closeDlg(){$("dlgWrap").classList.add("hide");if(document.activeElement)document.activeElement.blur()}
