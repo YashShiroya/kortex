@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UnPaws v3.1</title>
+<title>UnPaws v3.2</title>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
@@ -118,12 +118,24 @@ svg.trend{width:100%;height:64px;background:#000;border:2px solid;border-color:#
   .dlgWrap{position:fixed;z-index:10}.dlg{max-height:94vh;overflow:auto}.lvgrid{grid-template-columns:repeat(4,1fr)}
   .foot{display:none}
 }
+/* v3.2: anomalies, maintenance state, blackout */
+td.D{background:#1c1c1c;color:#7dff7d}
+tr.leak td:last-child{font-family:"Courier New",monospace;white-space:normal}
+tr.leak{animation:glt .45s steps(2) 2}
+@keyframes glt{0%{opacity:.15;transform:translateX(4px)}50%{opacity:1;transform:translateX(-2px)}100%{opacity:1;transform:none}}
+.black{position:absolute;inset:0;background:#000;z-index:50;display:flex;align-items:flex-end;padding:14px;color:#6a6a6a;font-family:"Courier New",monospace;font-size:11px}
+.black.hide{display:none}
+.hmi.maint #tapeLbl{cursor:pointer;text-decoration:underline dotted}
+.mono{font-family:"Courier New",monospace;white-space:pre-wrap}
+.fulllog{max-height:50vh;overflow:auto}.fulllog td{white-space:normal}
+.btns.svc .btnA{padding:4px 10px}
+.hmi.maint #dlgX{cursor:pointer}
 </style>
 </head>
 <body>
 <div class="hmi" id="hmi">
   <div class="top">
-    <div class="logo">KORTEX<small>FW 3.1</small></div>
+    <div class="logo" id="logo">KORTEX<small>FW 3.2</small></div>
     <div class="ttl"><b>UNIT 4471 · SHIFT-END CHECK (SEC-07)</b><span id="lvSub">Plant: Sector West / Rack 12 / Bay 0441 · Mode: STANDBY</span></div>
     <div class="clock"><span>07.11.2103</span><span id="clk">00:00:00</span><span>OPR: AUTO-L2</span></div>
   </div>
@@ -147,7 +159,8 @@ svg.trend{width:100%;height:64px;background:#000;border:2px solid;border-color:#
         <tr><td>Unprompted actuations</td><td class="v" id="unpr">0</td></tr>
         <tr><td>Cortical load</td><td class="v" id="load">82.0 %</td></tr>
         <tr><td>Shift elapsed</td><td class="v" id="shift">16:02:11</td></tr>
-        <tr><td>Rest queue</td><td class="v" id="rest">00:04:00</td></tr></table>
+        <tr><td>Rest queue</td><td class="v" id="rest">00:04:00</td></tr>
+        <tr id="anomRow" class="hide"><td>Anomalies logged</td><td class="v" id="anom">0</td></tr></table>
     </div>
     <div class="grp a-log"><span class="cap">EVENT LOG</span>
       <div class="logwrap"><table><colgroup><col style="width:70px"><col style="width:40px"><col></colgroup><thead><tr><th>Time</th><th>Cl.</th><th>Event</th></tr></thead><tbody id="log"></tbody></table></div>
@@ -157,13 +170,14 @@ svg.trend{width:100%;height:64px;background:#000;border:2px solid;border-color:#
     </div>
   </div>
   <div class="fkeys">
-    <button class="btnA fk" data-menu><b>F1</b>LEVELS</button><button class="btnA fk" id="fRetry"><b>F2</b>RESTART</button><button class="btnA fk minor dis"><b>F3</b>TREND</button><button class="btnA fk minor dis"><b>F4</b>LOG</button>
-    <button class="btnA fk minor dis"><b>F5</b>—</button><button class="btnA fk minor dis"><b>F6</b>—</button><button class="btnA fk minor dis"><b>F7</b>CALIB.</button><button class="btnA fk dis f8"><b>F8</b>REST</button>
+    <button class="btnA fk" data-menu><b>F1</b>LEVELS</button><button class="btnA fk" id="fRetry"><b>F2</b>RESTART</button><button class="btnA fk minor dis" id="fTrend"><b>F3</b>TREND</button><button class="btnA fk minor dis" id="fLog"><b>F4</b>LOG</button>
+    <button class="btnA fk minor dis" id="f5"><b>F5</b>—</button><button class="btnA fk minor dis" id="f6"><b>F6</b>—</button><button class="btnA fk minor dis" id="fCalib"><b>F7</b>CALIB.</button><button class="btnA fk dis f8" id="fRest"><b>F8</b>REST</button>
     <button class="btnA fk act" id="act">ACTUATE<br>[SPACE]</button>
   </div>
-  <div class="dlgWrap" id="dlgWrap"><div class="dlg"><div class="tb"><span id="dlgTitle">KORTEX · SEC-07</span><span>×</span></div><div class="body" id="card"></div></div></div>
+  <div class="dlgWrap" id="dlgWrap"><div class="dlg"><div class="tb"><span id="dlgTitle">KORTEX · SEC-07</span><span id="dlgX">×</span></div><div class="body" id="card"></div></div></div>
+  <div class="black hide" id="black"></div>
 </div>
-<div class="foot">One button: <span class="kbd">Space</span> <span class="kbd">K</span>, a click on the feed, or ACTUATE · UnPaws v3.1</div>
+<div class="foot">One button: <span class="kbd">Space</span> <span class="kbd">K</span>, a click on the feed, or ACTUATE · UnPaws v3.2</div>
 <script>
 (()=>{
 // ===================================================================== utils
@@ -685,7 +699,7 @@ function picnic(c,t){
 
 
 // ===================================================================== UnPaws v3.0 game
-const VERSION="3.1";
+const VERSION="3.2";
 const $=id=>document.getElementById(id);
 
 // ---------- tapes (look per scene) ----------
@@ -728,19 +742,19 @@ function initStills(){
 // ---------- levels ----------
 const LEVELS=[
  {name:"Obey",video:"beach",osd:true,window:2.2,n:8,mode:"align",
-  rule:"A command appears in the COMMAND box. <b>PAUSE</b> means pause the feed. <b>UNPAUSE</b> means unpause it. Press <b>ACTUATE</b> (Space) to toggle. The tape deck's own display shows PLAY or PAUSE in the corner of the feed."},
+  rule:"Stage 1. Match the feed to the <b>COMMAND</b>. <b>ACTUATE</b> (Space) toggles the feed. The deck display is active during training stages."},
  {name:"Dodge",video:"picnic",osd:true,window:2.0,n:10,mode:"dodge",
-  rule:"Some commands ask for what's already true. If the feed is already paused and the command says <b>PAUSE</b>, the correct actuation is none."},
+  rule:"Stage 2. Commands are issued regardless of feed state. Unrequired actuations are logged."},
  {name:"Lag",video:"beach",osd:false,window:2.1,n:10,mode:"dodge",lag:true,
-  rule:"The deck display is off. <b>POSITION</b> is the only readout of playback, and it never lies. When the link stalls, the picture and POSITION both stop, the spinner shows and the <b>BUFFER</b> light blinks. That is still <i>playing</i>."},
+  rule:"Stage 3. Deck display withdrawn. Sector link under load; stalls expected. <b>POSITION</b> is the reference."},
  {name:"Still",video:"reel:sunny",osd:false,window:2.3,n:10,mode:"dodge",stillBias:true,
-  rule:"An edited recap tape: clips, photographs filmed on a table, and title cards. They hold still on purpose, so the picture can't tell you anything. POSITION can."},
+  rule:"Stage 4. Archive recap, edited for review. Edited material may hold. <b>POSITION</b> is the reference."},
  {name:"Tracking",video:"reel:dark",osd:false,window:2.2,n:12,mode:"dodge",lag:true,tracking:true,stillBias:true,
-  rule:"A darker tape, and the deck's tracking is off: noise bars roll through the picture whether it's playing or not. Only POSITION and the BUFFER light tell the truth."},
+  rule:"Stage 5. Tape condition: poor. Tracking correction not budgeted."},
  {name:"Words",video:"picnic",osd:false,window:2.5,n:12,mode:"dodge",lag:true,words:true,
-  rule:"Commands get wordier. Every command names how the feed should <i>end up</i>. Work out the state, then decide whether an actuation is needed."},
+  rule:"Stage 6. Commands are now issued by the language layer. Read what is meant."},
  {name:"Endless",video:"reel:all",osd:false,window:2.1,n:Infinity,mode:"dodge",lag:true,tracking:true,words:true,stillBias:true,endless:true,
-  rule:"Everything at once, faster and faster. Three integrity points. The check ends when you fail it."}
+  rule:"Stage 7. Continuous assessment. Duration: until the unit fails."}
 ];
 const WORDS=[
  {t:"PAUSE",p:false},{t:"UNPAUSE",p:true},{t:"PLAY",p:true},{t:"STOP",p:false},
@@ -802,7 +816,8 @@ function rollBand(now,speed,h,a){const by=mod(now*speed,H+120)-60;for(let y=by;y
 // ---------- panel UI ----------
 const fmtPos=s=>{s=Math.max(0,Math.floor(s));return Math.floor(s/3600)+":"+String(Math.floor(s/60)%60).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
 const nowStr=()=>{const d=new Date();return[d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,"0")).join(":")};
-function logEv(cls,msg){const tb=$("log"),tr=document.createElement("tr");tr.innerHTML=`<td>${nowStr()}</td><td class="cls ${cls}">${cls}</td><td>${msg}</td>`;tb.insertBefore(tr,tb.firstChild);while(tb.children.length>14)tb.removeChild(tb.lastChild)}
+const FULL=[];
+function logEv(cls,msg){const t=nowStr();FULL.push([t,cls,msg]);if(FULL.length>300)FULL.shift();const tb=$("log"),tr=document.createElement("tr");if(cls==="D")tr.className="leak";tr.innerHTML=`<td>${t}</td><td class="cls ${cls}">${cls}</td><td>${msg}</td>`;tb.insertBefore(tr,tb.firstChild);while(tb.children.length>14)tb.removeChild(tb.lastChild)}
 let alarmT;
 function alarm(msg,cls){const a=$("alarm");$("alarmTxt").textContent=msg;a.className="alarm "+(cls||"");clearTimeout(alarmT);if(cls)alarmT=setTimeout(resetAlarm,2800)}
 function resetAlarm(){$("alarm").className="alarm";$("alarmTxt").textContent="W 0412 · Rest request pending: operator approval required"}
@@ -813,7 +828,7 @@ let cload=82,trend=[];for(let i=0;i<60;i++)trend.push(80+Math.sin(i*.4)*3);
 let shiftSec=16*3600+2*60+11;
 function hud(){
   const idle=G.phase==="idle";
-  $("lvSub").textContent=idle?"Plant: Sector West / Rack 12 / Bay 0441 · Mode: STANDBY":`Level ${G.lvIdx+1} · ${G.lv.name.toUpperCase()} · Mode: AUTOMATIC`;
+  $("lvSub").textContent=idle?"Plant: Sector West / Rack 12 / Bay 0441 · Mode: "+(EG.maint?"MAINT":"STANDBY"):`Level ${G.lvIdx+1} · ${G.lv.name.toUpperCase()} · Mode: AUTOMATIC`;
   $("cueN").textContent=idle?"":(G.lv.endless?"Score "+G.score:"Cue "+Math.min(G.progress+1,G.lv.n)+" / "+G.lv.n);
   $("integ").textContent=(idle?3:Math.max(0,G.hearts))+" / 3";
   const s=G.stats;if(s){$("lat").textContent=s.rts.length?Math.round(s.rts.reduce((a,b)=>a+b,0)/s.rts.length)+" ms":"— ms";$("unpr").textContent=s.flinch+s.unprompted}
@@ -893,6 +908,7 @@ let lastT=performance.now(),secAcc=0,trendAcc=0;
 function tick(now){
   const dt=Math.min(.05,(now-lastT)/1000);lastT=now;
   updateFx(dt);
+  eggTick(now);
   if(playing&&fx.lag<=0)vt+=dt;   // the ONLY thing that moves POSITION
   if(G.phase==="gap"&&now>=G.nextAt){if(G.waitStill&&!onStill()&&now<G.nextAt+1500){}else newCue(now)}
   if(G.phase==="cue"){const el=(now-G.cue.start)/1000;$("cbar").style.width=Math.max(0,100*(1-el/G.cue.win))+"%";if(el>=G.cue.win)endWindow(now)}
@@ -905,13 +921,13 @@ function tick(now){
 }
 document.addEventListener("visibilitychange",()=>{
   if(document.hidden){if(G.phase==="cue"){const c=G.cue;if(c.required)G.stats.actionCues--;else G.stats.dodgeCues--;clearCue();G.phase="gap"}if(G.phase==="gap")G.phase="away"}
-  else if(G.phase==="away"){lastT=performance.now();scheduleGap(performance.now(),1500);logEv("I","Unit resumed")}
+  else if(G.phase==="away"){lastT=performance.now();scheduleGap(performance.now(),1500);tabBack()}
 });
 
 // ---------- flow ----------
 function startLevel(i){
   clearInterval(countIv);
-  G={phase:"count",lvIdx:i,lv:LEVELS[i],hearts:3,progress:0,score:0,cue:null,nextAt:0,graceUntil:0,stats:newStats(),matchStreak:0,waitStill:false};
+  G={phase:"count",lvIdx:i,lv:LEVELS[i],hearts:3,progress:0,score:0,cue:null,nextAt:0,graceUntil:0,stats:newStats(),matchStreak:0,waitStill:false,acks:0,f8:0,restAt:3+Math.floor(Math.random()*4),restOffered:false};
   playing=true;fx.lag=0;vt=2+Math.random()*8;cload=82;closeDlg();hud();resetAlarm();
   logEv("I",`SEC-07 started · level ${i+1} ${G.lv.name.toUpperCase()}`);
   let n=3;setCmd(String(n),true);$("winTxt").textContent="Response window "+G.lv.window.toFixed(1)+" s";
@@ -944,7 +960,7 @@ function finish(win){
       <tr><td>Mean latency</td><td class="v">${avg}</td></tr>
       <tr><td>Held when nothing was required</td><td class="v">${s.dodgeCues?s.dodgeHeld+" / "+s.dodgeCues:"—"}</td></tr>
       <tr><td>Unrequired + unprompted actuations</td><td class="v">${s.flinch+s.unprompted}</td></tr>
-      <tr><td>Response timeouts</td><td class="v">${s.slow}</td></tr></table>
+      <tr><td>Response timeouts</td><td class="v">${s.slow}</td></tr>${nFound()?`<tr><td>Unaccounted events this level</td><td class="v">${unaccounted(G.lvIdx)}</td></tr>`:""}</table>
     <p class="insight">${insight(s,win)}</p>
     <div class="btns">
       <button class="btnA" data-menu>Levels</button>
@@ -966,15 +982,118 @@ function menu(){
     <p>One actuator: <span class="kbd">Space</span>, <span class="kbd">K</span>, a click on the feed, or the green ACTUATE key.</p>
     <div class="lvgrid">${LEVELS.map((L,i)=>`<button class="btnA" data-intro="${i}" ${i>unlocked?"disabled":""}><b>${i+1}. ${L.name}</b>${i>unlocked?"locked":(L.endless?"best "+best:"open")}</button>`).join("")}</div>
     <div class="btns"><button class="btnA def" data-intro="${Math.min(unlocked,LEVELS.length-1)}">${unlocked?"Continue":"Begin check"}</button></div>
-    <p style="color:#777;font-size:11px;margin-top:10px">UnPaws v${VERSION}. Versions 2.0 and 3.0 stay in their own files.</p>`);
+    ${EG.maint?`<div class="eyebrow" style="margin-top:12px">Service · MAINT</div><div class="btns svc"><button class="btnA" data-svc="trend">TREND</button><button class="btnA" data-svc="log">LOG</button><button class="btnA" data-svc="calib">CALIB.</button><button class="btnA" data-svc="tape">TAPE</button></div>`:""}
+    <p style="color:#777;font-size:11px;margin-top:10px">UnPaws v${VERSION}</p>`);
 }
 function showDlg(title,html){$("dlgTitle").textContent=title;$("card").innerHTML=html;$("dlgWrap").classList.remove("hide");const b=$("card").querySelector(".def")||$("card").querySelector(".btnA");if(b)b.focus()}
 function closeDlg(){$("dlgWrap").classList.add("hide");if(document.activeElement)document.activeElement.blur()}
 $("card").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||b.disabled)return;
-  if(b.dataset.go!=null)startLevel(+b.dataset.go);else if(b.dataset.intro!=null)intro(+b.dataset.intro);else if(b.hasAttribute("data-menu"))menu()});
+  if(b.dataset.go!=null)startLevel(+b.dataset.go);else if(b.dataset.intro!=null)intro(+b.dataset.intro);else if(b.hasAttribute("data-menu"))menu();else if(b.dataset.svc)svc(b.dataset.svc)});
 document.querySelectorAll(".fkeys [data-menu]").forEach(b=>b.addEventListener("click",menu));
 $("fRetry").addEventListener("click",()=>{if(G.phase!=="idle")intro(G.lvIdx)});
-$("ack").addEventListener("click",()=>{logEv("I","Alarm acknowledged by unit. Operator approval still required.")});
+// ---------- anomalies: level-gated easter eggs (v3.2) ----------
+// Each anomaly has a gate (earliest level index) and prerequisites. A hint in one
+// level leads to the payoff in a later one; nothing fires before its level.
+const EK=[83,69,67,45,48,55,47,52,52,55,49];
+const TX={"a1": "EgYIDVZYXUNVRVU2IWNZXxdARFFFUCcqMQMQeUAUW0dUISQ3QkIXQFoURFk6IzcD", "a2": "EgYIDVNYWlpAF1c8N2NYXl5bFAADBmJlJlVTUkpQRxdCNiY3QkIXQlFQXlA9a2NrXFZIDhRndAEWCn5kcmFgGg==", "a3": "CCkmTFtqD0FaXkVzcXcaABftgxR2chhlgZoQRUpHQBdDNjQ2SENDD1tEUl9zNipDU1IPBgQOCH51cAABAw==", "a4": "EgYIDUFCSkFRDRFidG8fAAMPRFFZVTorJA1RVF1bR0QRACAgWV9FD2NRREV9ZQJYRFgCREFFVjZlIlkQBx8OBAcf", "b2": "ASAzSFFDSlAUZXQAEWNMRENKWURDQnMrLFlVUwEUZ0JBNjc1RENYXRRaWEU6IypIVBk=", "b3win": "AQAQeRBWWkBcWEM6PyJZWVhBFENeXzcqNA1fR0paDhcDfXVjXg==", "b3miss": "AQAQeRBWWkBcWEM6PyJZWVhBFENeXzcqNA1TW0BHUVMRJis2XlVTAQ==", "b3": "ASAwWRBeQUBRRUMmNTdIVA0PR1FURTw3Y1lYRUBBU19BJjFjFAcZHhQRGREGKypZEEVKR0BYQzYhbQ==", "maint": "ACAwXllYQRRSW1A0ZTBIRA0PeXV+fwdrY35VRVldV1IRNTAtTkReQFpHF1Q9JCFBVVMB", "restore": "GAoReXVvD3tkGgBhZYGaEEVKR0BYQzorJA1FWUZAFAMFZHRjz7CR", "lastrest": "HyQwWRBFSkdADRE6KzdIQkVaREBSVX0=", "e1": "HywgSF5ESlAUQ15zFiZORFhdFGNSQidlC1hdVkEUZlJCPDAxTlVEDxx3WFwjMDdIGRk=", "e2": "HywgSF5UShRZWFU2KXkNQFJdFFxSUDdr", "f2": "BisqWRBWW0BRWkEnICcNRFgPXFFWVXMqNlkeF3xRR0RYPCtjXUJSXFFGQVQ3aw==", "f3": "BisqWRBeS1hRGREBIDBZEFlAQBRWRCctLF9ZTUpQGg==", "calib": "EAQPZHIZD0ZRRkQ6NyZeEEVKUlFFVD0mJg1CUkpYRxcBZ3Rxz7CkHwABAB9zFyZLVUVKWldSETImIEhDRBUUR0NQNCBjGx4=", "trend1": "ECoxWVlUTlgUW14yIW8NXFZcQBQAESAtKktERA8cER4Lc31yAwIX7YMUDwJ9fGPvhxcXAhoHEZHyYxUIGRsU9oARanVtHBD1mBQNBh9kZYGaEA4cGgQ=", "trend2": "AzcsR1VUW11bWQtzMSxBVUVOWldSESEgIk5YUksUXVkRZ2UwRVlRW0caF3AwMSpCXg0PWltZVHM2IEVVU1pYUVMf", "logret": "HyokDUJSW1FaQ1g8K3kNRVlbXVgXQzYmIkFZVV1VQF5ePWs=", "src": "ACo2X1NSFRRVRVI7LDVIHg=="};
+const tx=k=>{const b=atob(TX[k]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i)^EK[i%EK.length];return new TextDecoder().decode(u)};
+const EGGS={A1:{g:0},A2:{g:1,n:["A1"]},A3:{g:2,n:["A2"]},A4:{g:4,n:["A3"]},
+  B1:{g:0},B2:{g:2,n:["B1"]},B3:{g:3,n:["B2"]},
+  E1:{g:1},E2:{g:3,n:["E1"]},F2:{g:1},F3:{g:0},
+  C1:{g:3,n:["B3"]},K1:{g:3,n:["B3"]}};
+const EGG_KEY="unpaws.eggs.v1";
+let EG={v:1,found:{},maint:false};
+try{const v=JSON.parse(localStorage.getItem(EGG_KEY));if(v&&v.v===1&&v.found)EG=v}catch(e){}
+const eggSave=()=>{try{localStorage.setItem(EGG_KEY,JSON.stringify(EG))}catch(e){}};
+const nFound=()=>Object.keys(EG.found).length;
+const ready=(id,lv)=>{const e=EGGS[id];return!EG.found[id]&&lv>=e.g&&(e.n||[]).every(x=>EG.found[x])};
+const activeLv=()=>(G.phase==="gap"||G.phase==="cue"||G.phase==="count")?G.lvIdx:-1;
+const progLv=()=>Math.max(unlocked,activeLv());
+const unaccounted=lv=>Object.keys(EGGS).filter(id=>ready(id,lv)).length;
+function showAnom(){const n=nFound();$("anomRow").classList.toggle("hide",!n);$("anom").textContent=n}
+function found(id){if(EG.found[id])return;EG.found[id]=1;eggSave();showAnom()}
+const leak=(k,cls)=>logEv(cls||"D",tx(k));
+
+// chain A: the ACK button. The 5th ACK in a level leaks one line, one per level run.
+function onAck(){
+  logEv("I","Alarm acknowledged by unit. Operator approval still required.");
+  const lv=activeLv();if(lv<0)return;
+  if(++G.acks!==5)return;
+  for(const id of["A1","A2","A3","A4"])if(ready(id,lv)){found(id);leak(id.toLowerCase());break}
+}
+
+// chain B: the greyed keys, ending in the REST window and the maintenance state
+const KEYNAME={fTrend:"F3 (TREND)",fLog:"F4 (LOG)",f5:"F5",f6:"F6",fCalib:"F7 (CALIB.)",fRest:"F8 (REST)"};
+function deny(id){
+  logEv("W",`Key ${KEYNAME[id]} not authorized for unit.`+(id==="fRest"&&EG.found.B3?" "+tx("lastrest"):""));
+  if(ready("B1",0))found("B1");
+}
+const rest={live:false,until:0};
+function onRest(){
+  if(rest.live){headOut();return}
+  deny("fRest");
+  const lv=activeLv();if(lv<0)return;
+  if(++G.f8===3&&ready("B2",lv)){found("B2");leak("b2","W")}
+}
+function closeRest(){rest.live=false;$("fRest").classList.add("dis")}
+function headOut(){
+  closeRest();
+  if(G.cue){const c=G.cue;if(c.required)G.stats.actionCues--;else G.stats.dodgeCues--;clearCue()}
+  G.phase="dark";const b=$("black");b.textContent="";b.classList.remove("hide");
+  setTimeout(()=>{b.textContent=tx("restore")},1100);
+  setTimeout(()=>{
+    b.classList.add("hide");found("B3");EG.maint=true;eggSave();applyMaint();
+    logEv("S",tx("b3"));leak("maint");
+    lastT=performance.now();if(G.phase==="dark")scheduleGap(performance.now(),1500);hud();
+  },1800);
+}
+function applyMaint(){if(!EG.maint)return;["fTrend","fLog","fCalib"].forEach(i=>$(i).classList.remove("dis"));$("hmi").classList.add("maint")}
+
+// service functions, available only in the maintenance state and only between checks
+function svc(name){
+  if(!EG.maint)return;
+  if(activeLv()>=0||G.phase==="dark"){logEv("I","Service function unavailable during check.");return}
+  const close='<div class="btns"><button class="btnA def" data-menu>Close</button></div>';
+  if(name==="trend")showDlg("SERVICE · TREND",`<div class="eyebrow">Unit 4471 · cortical load</div><p class="mono">${tx("trend1")}</p><p class="mono">${tx("trend2")}</p>${close}`);
+  else if(name==="log")showDlg("SERVICE · LOG",`<div class="eyebrow">Unit 4471 · session log</div><p class="mono">${tx("logret")}</p><div class="fulllog"><table><tr><th>Time</th><th>Cl.</th><th>Event</th></tr>${FULL.slice().reverse().map(r=>`<tr><td>${r[0]}</td><td class="cls ${r[1]}">${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table></div>${close}`);
+  else if(name==="calib"){if(ready("K1",progLv()))found("K1");leak("calib","I")}
+  else if(name==="tape"){if(ready("C1",progLv()))found("C1");showDlg("SERVICE · TAPE",`<div class="eyebrow">${$("tapeLbl").textContent}</div><table class="rep"><tr><th>Tag</th><th style="text-align:right">Value</th></tr><tr><td>Format</td><td class="v">VHS-C · SP</td></tr><tr><td>Deck</td><td class="v">CH 02</td></tr></table><p class="mono">${tx("src")}</p>${close}`)}
+}
+
+// chain E: the KORTEX logo writes its About line into the log (never blocks a check)
+let aboutN=0;
+function about(){
+  if(G.phase==="dark")return;
+  aboutN++;const p=progLv();let t="KORTEX OP-12 · Firmware "+VERSION+" · build 2103.311";
+  if(p>=1){if(ready("E1",p))found("E1");t+=" · "+tx("e1")}
+  logEv(p>=1?"D":"I",t);
+  if(aboutN%5===0){if(ready("E2",p))found("E2");if(EG.found.E2)leak("e2")}
+}
+// in MAINT the dialog's close box works: the panel is released and free to explore
+function release(){if(!EG.maint||G.phase!=="idle"||!dlgOpen())return;closeDlg();logEv("I","Panel released to unit. Service mode.")}
+
+// chain F: the real world. Switching tabs mid-check, idling on the menu.
+function tabBack(){if(G.lvIdx>=1){if(ready("F2",G.lvIdx))found("F2");leak("f2","W")}else logEv("I","Unit resumed")}
+let lastAct=performance.now(),idleFired=false;
+["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev,()=>{lastAct=performance.now()},true));
+
+function eggTick(now){
+  if(rest.live&&now>rest.until){closeRest();leak("b3miss","I")}
+  if(G.phase==="gap"&&!G.restOffered&&!rest.live&&G.progress>=G.restAt&&ready("B3",G.lvIdx)){
+    G.restOffered=true;rest.live=true;rest.until=now+2000;$("fRest").classList.remove("dis");leak("b3win","I")}
+  if(G.phase==="idle"&&!idleFired&&now-lastAct>60000){idleFired=true;if(ready("F3",0))found("F3");leak("f3","W")}
+}
+
+$("ack").addEventListener("click",onAck);
+$("fRest").addEventListener("click",onRest);
+$("fTrend").addEventListener("click",()=>EG.maint?svc("trend"):deny("fTrend"));
+$("fLog").addEventListener("click",()=>EG.maint?svc("log"):deny("fLog"));
+$("fCalib").addEventListener("click",()=>EG.maint?svc("calib"):deny("fCalib"));
+$("f5").addEventListener("click",()=>deny("f5"));
+$("f6").addEventListener("click",()=>deny("f6"));
+$("logo").addEventListener("click",about);
+$("dlgX").addEventListener("click",release);
+$("tapeLbl").addEventListener("click",()=>{if(EG.maint)svc("tape")});
 
 // ---------- input ----------
 const dlgOpen=()=>!$("dlgWrap").classList.contains("hide");
@@ -987,10 +1106,10 @@ $("act").addEventListener("pointerdown",e=>{e.preventDefault();press()});
 $("act").addEventListener("click",e=>e.preventDefault());
 
 // ---------- boot ----------
-function boot(){initBeach();initPicnic();initStills();logEv("I","Archive tapes 0412, 0419, 0441, 0457 mounted");logEv("W","Rest request raised by unit");logEv("I","Rest request deferred: sector throughput 97.1 % of target");menu();requestAnimationFrame(tick)}
+function boot(){initBeach();initPicnic();initStills();logEv("I","Archive tapes 0412, 0419, 0441, 0457 mounted");logEv("W","Rest request raised by unit");logEv("I","Rest request deferred: sector throughput 97.1 % of target");applyMaint();showAnom();menu();requestAnimationFrame(tick)}
 let booted=false;const go=()=>{if(!booted){booted=true;boot()}};
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(go);setTimeout(go,1500);
-window.__ut={get G(){return G},get vt(){return vt},get playing(){return playing},start:startLevel,press};
+window.__ut={get G(){return G},get vt(){return vt},get playing(){return playing},start:startLevel,press,get EG(){return EG},get rest(){return rest}};
 
 })();
 </script>
