@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UnPaws v3.2.1</title>
+<title>UnPaws v3.2.2</title>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
@@ -130,13 +130,13 @@ tr.leak{animation:glt .45s steps(2) 2}
 .mono{font-family:"Courier New",monospace;white-space:pre-wrap}
 .fulllog{max-height:50vh;overflow:auto}.fulllog td{white-space:normal}
 .btns.svc .btnA{padding:4px 10px}
-.hmi.maint #dlgX{cursor:pointer}
+#dlgX{cursor:pointer}
 </style>
 </head>
 <body>
 <div class="hmi" id="hmi">
   <div class="top">
-    <div class="logo" id="logo">KORTEX<small>FW 3.2.1</small></div>
+    <div class="logo" id="logo">KORTEX<small>FW 3.2.2</small></div>
     <div class="ttl"><b>UNIT 4471 · SHIFT-END CHECK (SEC-07)</b><span id="lvSub">Plant: Sector West / Rack 12 / Bay 0441 · Mode: STANDBY</span></div>
     <div class="clock"><span>07.11.2103</span><span id="clk">00:00:00</span><span>OPR: AUTO-L2</span></div>
   </div>
@@ -178,7 +178,7 @@ tr.leak{animation:glt .45s steps(2) 2}
   <div class="dlgWrap" id="dlgWrap"><div class="dlg"><div class="tb"><span id="dlgTitle">KORTEX · SEC-07</span><span id="dlgX">×</span></div><div class="body" id="card"></div></div></div>
   <div class="black hide" id="black"></div>
 </div>
-<div class="foot">One button: <span class="kbd">Space</span> <span class="kbd">K</span>, a click on the feed, or ACTUATE · UnPaws v3.2.1</div>
+<div class="foot">One button: <span class="kbd">Space</span> <span class="kbd">K</span>, a click on the feed, or ACTUATE · UnPaws v3.2.2</div>
 <script>
 (()=>{
 // ===================================================================== utils
@@ -700,7 +700,7 @@ function picnic(c,t){
 
 
 // ===================================================================== UnPaws v3.0 game
-const VERSION="3.2.1";
+const VERSION="3.2.2";
 const $=id=>document.getElementById(id);
 
 // ---------- tapes (look per scene) ----------
@@ -1071,7 +1071,7 @@ function about(){
   if(aboutN%5===0){if(ready("E2",p))found("E2");if(EG.found.E2)leak("e2")}
 }
 // in MAINT the dialog's close box works: the panel is released and free to explore
-function release(){if(!EG.maint||G.phase!=="idle"||!dlgOpen())return;closeDlg();logEv("I","Panel released to unit. Service mode.")}
+function release(){if(G.phase!=="idle"||!dlgOpen())return;closeDlg();logEv("I",EG.maint?"Panel released to unit. Service mode.":"Check menu dismissed. F1 LEVELS restores it.")}
 
 // chain F: the real world. Switching tabs mid-check, idling on the menu.
 function tabBack(){if(G.lvIdx>=1){if(ready("F2",G.lvIdx))found("F2");leak("f2","W")}else logEv("I","Unit resumed")}
