@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UnPaws v3.2.2</title>
+<title>UnPaws v3.2.3</title>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;background:#2b2b2b;min-height:100vh}
 body{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px}
-.hmi{position:relative;font-family:Tahoma,Verdana,Arial,sans-serif;font-size:12px;color:#000;background:#d4d0c8;border:2px solid;border-color:#fff #404040 #404040 #fff;width:min(1100px,calc((100vh - 46px)*4/3),100%);aspect-ratio:4/3;display:flex;flex-direction:column;user-select:none;-webkit-user-select:none;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.hmi{position:relative;font-family:Tahoma,Verdana,Arial,sans-serif;font-size:12px;color:#000;background:#d4d0c8;border:2px solid;border-color:#fff #404040 #404040 #fff;width:min(1100px,calc((100vh - 46px)*4/3),100%);aspect-ratio:4/3;min-height:0;display:flex;flex-direction:column;user-select:none;-webkit-user-select:none;box-shadow:0 10px 40px rgba(0,0,0,.5)}
 .top{display:flex;align-items:stretch;background:#0a246a;color:#fff;height:46px;flex:none}
 .logo{background:#fff;color:#0a246a;font-weight:900;font-size:17px;letter-spacing:.08em;display:flex;flex-direction:column;justify-content:center;padding:0 12px;border-right:2px solid #8a8a8a;font-style:italic;line-height:1}
 .logo small{font-style:normal;font-weight:400;font-size:9px;letter-spacing:.02em;color:#555;margin-top:3px}
@@ -136,7 +136,7 @@ tr.leak{animation:glt .45s steps(2) 2}
 <body>
 <div class="hmi" id="hmi">
   <div class="top">
-    <div class="logo" id="logo">KORTEX<small>FW 3.2.2</small></div>
+    <div class="logo" id="logo">KORTEX<small>FW 3.2.3</small></div>
     <div class="ttl"><b>UNIT 4471 · SHIFT-END CHECK (SEC-07)</b><span id="lvSub">Plant: Sector West / Rack 12 / Bay 0441 · Mode: STANDBY</span></div>
     <div class="clock"><span>07.11.2103</span><span id="clk">00:00:00</span><span>OPR: AUTO-L2</span></div>
   </div>
@@ -178,7 +178,7 @@ tr.leak{animation:glt .45s steps(2) 2}
   <div class="dlgWrap" id="dlgWrap"><div class="dlg"><div class="tb"><span id="dlgTitle">KORTEX · SEC-07</span><span id="dlgX">×</span></div><div class="body" id="card"></div></div></div>
   <div class="black hide" id="black"></div>
 </div>
-<div class="foot">One button: <span class="kbd">Space</span> <span class="kbd">K</span>, a click on the feed, or ACTUATE · UnPaws v3.2.2</div>
+<div class="foot">One button: <span class="kbd">Space</span> <span class="kbd">K</span>, a click on the feed, or ACTUATE · UnPaws v3.2.3</div>
 <script>
 (()=>{
 // ===================================================================== utils
@@ -700,7 +700,7 @@ function picnic(c,t){
 
 
 // ===================================================================== UnPaws v3.0 game
-const VERSION="3.2.2";
+const VERSION="3.2.3";
 const $=id=>document.getElementById(id);
 
 // ---------- tapes (look per scene) ----------
@@ -991,7 +991,7 @@ function closeDlg(){$("dlgWrap").classList.add("hide");if(document.activeElement
 $("card").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||b.disabled)return;
   if(b.dataset.go!=null)startLevel(+b.dataset.go);else if(b.dataset.intro!=null)intro(+b.dataset.intro);else if(b.hasAttribute("data-menu"))menu();else if(b.dataset.svc)svc(b.dataset.svc)});
 document.querySelectorAll(".fkeys [data-menu]").forEach(b=>b.addEventListener("click",menu));
-$("fRetry").addEventListener("click",()=>{if(G.phase!=="idle")intro(G.lvIdx)});
+$("fRetry").addEventListener("click",()=>{if(G.phase!=="dark")intro(G.lvIdx)});
 // ---------- anomalies: level-gated easter eggs (v3.2) ----------
 // Each anomaly has a gate (earliest level index) and prerequisites. A hint in one
 // level leads to the payoff in a later one; nothing fires before its level.
